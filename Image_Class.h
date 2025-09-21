@@ -1,4 +1,5 @@
 /**
+ *
  * @File  : Image_Class.h
  * @brief : This file contains the declaration of the Image class.
  *
