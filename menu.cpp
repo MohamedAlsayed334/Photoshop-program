@@ -4,6 +4,7 @@
 #include "Grayscale filter.cpp"
 #include "Black and White filter.cpp"
 #include "Invert Image filter.cpp"
+#include "flip filter.cpp"
 using namespace std;
 
 //-------------------menu----------------------
@@ -27,6 +28,8 @@ int main()
     cout << "1- Grayscale Conversion\n";
     cout << "2- Black and White\n";
     cout << "3- Invert Image colors\n";
+    cout << "4- Flip Image\n";
+    cout << "Your choice: ";
     getline(cin, choose);
     if (choose == "1" || choose == "Grayscale Conversion")
     {
@@ -39,5 +42,9 @@ int main()
     else if (choose == "3" || choose == "Invert Image colors")
     {
         invertimage(imagename);
+    }
+    else if (choose == "4" || choose == "Flip Image")
+    {
+        flipimage(imagename);
     }
 }
