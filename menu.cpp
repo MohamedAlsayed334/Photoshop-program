@@ -182,7 +182,68 @@ int flipimage(string filename)
     }
     return 0;
 }
+Image rotate90(const Image& org) // Function to rotate the image 90 Degrees
+{
+    Image output(org.height, org.width); // here the width is the height of image & vice versa.
+    for (int i = 0; i < org.width; ++i)
+    {
+        for (int j = 0; j < org.height; ++j)
+        {
+            for (int k = 0; k < org.channels; ++k)
+                output(org.height - 1 - j, i, k) = org(i, j, k); // this formula calculates the new position of each pixel.
+        } // the index of new pos is (height of old image - 1 - the old col index ,  the old row index)
+    }
+    return output;
+}
+Image rotate180(const Image& org)
+{
+    Image output(org.width, org.height);
+    for (int i = 0; i < org.width; ++i)
+    {
+        for (int j = 0; j < org.height; ++j)
+        {
+            for (int k = 0; k < org.channels; ++k)
+                output(org.width - 1 - i, org.height - 1 - j, k) = org(i, j, k);
+        } // it is easier as it is just swap between pixels of height & Width.
+    }
+    return output;
+}
+Image rotate270(const Image& org) //  also here the width is the height of image & vice versa.
+{
+    Image output(org.height, org.width);
+    for (int i = 0; i < org.width; ++i)
+    {
+        for (int j = 0; j < org.height; ++j)
+        {
+            for (int k = 0; k < org.channels; ++k)
+                output(j, org.width - 1 - i, k) = org(i, j, k);
+        } //the new position is ( the old col. index ,the old width - 1 - the old row index )
+    }
+    return output;
+}
+int rotate_image(string filename)
+{
+    int Degree;
+    cout << "Enter rotation degree (90 / 180 / 270): ";
+    cin >> Degree;
 
+    Image rotated;
+    if (Degree == 90)
+        rotated = rotate90(filename);
+    else if (Degree == 180)
+        rotated = rotate180(filename);
+    else if (Degree == 270)
+        rotated = rotate270(filename);
+    else {
+        cout << "Invalid degree!\n";
+        return 1;
+    }
+    cout << "Enter output filename (with extension .jpg/.png/.bmp/.tga):\n";
+    cin >> filename;
+    rotated.saveImage(filename);
+    cout << "Image saved successfully as "<< filename ;
+    return 0;
+}
 //-------------------menu----------------------
 
 int main()
@@ -200,12 +261,19 @@ int main()
     // Input Buffer: [ ]  // Empty
     // ↑
     // getline() now waits for actual user input
-    cout << "please choose the filter (you can choose by number):\n";
+    Image image(imagename); // checks loading process
+    if (!image.loadNewImage(imagename))
+    {
+        cout << "Error loading image!\n";
+        return 1;
+    }
+    cout << "Please choose the filter (you can choose by number):\n";
     cout << "1- Grayscale Conversion\n";
     cout << "2- Black and White\n";
     cout << "3- Invert Image colors\n";
     cout << "4- Flip Image\n";
     cout << "5- Crop Image\n";
+    cout << "6- Rotation Image\n";
     cout << "Your choice: ";
     getline(cin, choose);
     if (choose == "1" || choose == "Grayscale Conversion")
@@ -227,5 +295,9 @@ int main()
     else if (choose == "5" || choose == "Crop Image")
     {
         CropImage(imagename);
+    }
+    else if (choose == "6" || choose == "Rotation Image")
+    {
+        rotate_image(imagename);
     }
 }
