@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include "Image_Class.h"
-#include "Crop image.cpp"
+#include "Darken and Lighten Image filter .cpp"
 using namespace std;
 //<<------------------------1------------------------->>
 // the first step in the project
@@ -105,6 +105,7 @@ int invertimage(string filename)
     cout << "Image saved successfully as " << filename << endl;
     return 0;
 }
+
 //<<------------------------4------------------------->>
 // the fourth filter in our project
 //  flip the Image vertically and horizontally
@@ -179,10 +180,58 @@ int flipimage(string filename)
     else
     {
         cout << "Invalid choice. Please choose 1 or 2." << endl;
+        flipimage(filename);
     }
     return 0;
 }
-Image rotate90(const Image& org) // Function to rotate the image 90 Degrees
+
+//<<------------------------5------------------------->>
+// the filter num. 5 in our project
+//  crop the image
+int CropImage(string filename)
+{
+    Image image(filename);
+    cout << "pleas enter the x and y point that you will start to crop from\n";
+    int x, y;
+    cout << "x:";
+    cin >> x;
+    cout << "y:";
+    cin >> y;
+    cout << "pleas enter the width and height of the croped image\n";
+    int w, h;
+    cout << "width:";
+    cin >> w;
+    cout << "height:";
+    cin >> h;
+    if (x < 0 || y < 0 || w <= 0 || h <= 0 || x + w > image.width || y + h > image.height)
+    {
+        cout << "Error: Invalid crop dimensions,try again" << endl;
+        CropImage(filename);
+    }
+    Image croppedImage(w, h);
+    for (int i = 0; i < w; ++i)
+    {
+        for (int j = 0; j < h; ++j)
+        {
+            croppedImage(i, j, 0) = image(x + i, y + j, 0);
+            croppedImage(i, j, 1) = image(x + i, y + j, 1);
+            croppedImage(i, j, 2) = image(x + i, y + j, 2);
+        }
+    }
+
+    cout << "Pls enter image name to store new image\n";
+    cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+
+    cin >> filename;
+    croppedImage.saveImage(filename);
+    cout << "Image saved successfully as " << filename << endl;
+    return 0;
+}
+
+//<<------------------------6------------------------->>
+// the filter num. 6 in our project
+//  rotate  the image by 90, 180, 270 degrees
+Image rotate90(const Image &org) // Function to rotate the image 90 Degrees
 {
     Image output(org.height, org.width); // here the width is the height of image & vice versa.
     for (int i = 0; i < org.width; ++i)
@@ -195,7 +244,7 @@ Image rotate90(const Image& org) // Function to rotate the image 90 Degrees
     }
     return output;
 }
-Image rotate180(const Image& org)
+Image rotate180(const Image &org)
 {
     Image output(org.width, org.height);
     for (int i = 0; i < org.width; ++i)
@@ -208,7 +257,7 @@ Image rotate180(const Image& org)
     }
     return output;
 }
-Image rotate270(const Image& org) //  also here the width is the height of image & vice versa.
+Image rotate270(const Image &org) //  also here the width is the height of image & vice versa.
 {
     Image output(org.height, org.width);
     for (int i = 0; i < org.width; ++i)
@@ -217,7 +266,7 @@ Image rotate270(const Image& org) //  also here the width is the height of image
         {
             for (int k = 0; k < org.channels; ++k)
                 output(j, org.width - 1 - i, k) = org(i, j, k);
-        } //the new position is ( the old col. index ,the old width - 1 - the old row index )
+        } // the new position is ( the old col. index ,the old width - 1 - the old row index )
     }
     return output;
 }
@@ -234,21 +283,26 @@ int rotate_image(string filename)
         rotated = rotate180(filename);
     else if (Degree == 270)
         rotated = rotate270(filename);
-    else {
+    else
+    {
         cout << "Invalid degree!\n";
         return 1;
     }
     cout << "Enter output filename (with extension .jpg/.png/.bmp/.tga):\n";
     cin >> filename;
     rotated.saveImage(filename);
-    cout << "Image saved successfully as "<< filename ;
+    cout << "Image saved successfully as " << filename;
     return 0;
 }
-//-------------------menu----------------------
 
+//<<------------------------7------------------------->>
+// the filter num. 7 in our project
+//  Darken and Lighten Image filter
+
+//-------------------menu----------------------
 int main()
 {
-    string imagename, choose;
+    string imagename, choice;
     cout << "Please enter the image name: ";
     cin >> imagename;
     cin.ignore(); // <------مهم جدا------->
@@ -274,30 +328,89 @@ int main()
     cout << "4- Flip Image\n";
     cout << "5- Crop Image\n";
     cout << "6- Rotation Image\n";
+    cout << "7- Darken and Lighten Image filter\n";
     cout << "Your choice: ";
-    getline(cin, choose);
-    if (choose == "1" || choose == "Grayscale Conversion")
+    getline(cin, choice);
+    if (choice == "1" || choice == "Grayscale Conversion")
     {
         GrayscaleConversion(imagename);
     }
-    else if (choose == "2" || choose == "Black and White")
+    else if (choice == "2" || choice == "Black and White")
     {
         BlackWhiteConvertion(imagename);
     }
-    else if (choose == "3" || choose == "Invert Image colors")
+    else if (choice == "3" || choice == "Invert Image colors")
     {
         invertimage(imagename);
     }
-    else if (choose == "4" || choose == "Flip Image")
+    else if (choice == "4" || choice == "Flip Image")
     {
         flipimage(imagename);
     }
-    else if (choose == "5" || choose == "Crop Image")
+    else if (choice == "5" || choice == "Crop Image")
     {
         CropImage(imagename);
     }
-    else if (choose == "6" || choose == "Rotation Image")
+    else if (choice == "6" || choice == "Rotation Image")
     {
         rotate_image(imagename);
     }
+    else if (choice == "7" || choice == "Darken and Lighten Image filter")
+    {
+        DarkenLightenImage(imagename);
+    }
 }
+//<<------------------------a way to edit on the same image ------------------------->>
+//<<----------- but chatgpt halp me here and i think he help me too much------------->>
+// #include <iostream>
+// #include <string>
+// using namespace std;
+
+// // one full cycle
+// bool runOnce() {
+//     string imagename, choice;
+//     cout << "Please enter the image name: ";
+//     cin >> imagename;
+//     cin.ignore(); // clear newline
+
+//     cout << "please choose the filter (you can choose by number):\n";
+//     cout << "1- Grayscale Conversion\n";
+//     cout << "2- Black and White\n";
+//     cout << "3- Invert Image colors\n";
+//     cout << "4- Flip Image\n";
+//     cout << "5- Crop Image\n";
+//     cout << "6- Darken and Lighten Image filter\n";
+//     cout << "Your choice: ";
+//     getline(cin, choice);
+
+//     if (choice == "1" || choice == "Grayscale Conversion")
+//         GrayscaleConversion(imagename);
+//     else if (choice == "2" || choice == "Black and White")
+//         BlackWhiteConvertion(imagename);
+//     else if (choice == "3" || choice == "Invert Image colors")
+//         invertimage(imagename);
+//     else if (choice == "4" || choice == "Flip Image")
+//         flipimage(imagename);
+//     else if (choice == "5" || choice == "Crop Image")
+//         CropImage(imagename);
+//     else if (choice == "6" || choice == "Darken and Lighten Image filter")
+//         DarkenLightenImage(imagename);
+
+//     // ask if repeat
+//     string response;
+//     cout << "Do you want to apply another filter? (yes/no): ";
+//     cin >> response;
+//     cin.ignore(); // clean newline
+
+//     if (response == "yes" || response == "y" || response == "Y" || response == "Yes")
+//         return true;   // repeat whole process
+//     return false;      // stop
+// }
+
+// int main() {
+//     while (runOnce()) {
+//         // keeps repeating until user says "no"
+//     }
+//     cout << "Thank you for using our Baby photo. Goodbye!" << endl;
+//     return 0;
+// }
