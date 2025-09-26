@@ -2,6 +2,7 @@
 #include <string>
 #include "Image_Class.h"
 #include "Darken and Lighten Image filter .cpp"
+#include "resize.cpp"
 using namespace std;
 //<<------------------------1------------------------->>
 // the first step in the project
@@ -329,6 +330,7 @@ int main()
     cout << "5- Crop Image\n";
     cout << "6- Rotation Image\n";
     cout << "7- Darken and Lighten Image filter\n";
+    cout << "8- Resize Image\n";
     cout << "Your choice: ";
     getline(cin, choice);
     if (choice == "1" || choice == "Grayscale Conversion")
@@ -358,6 +360,10 @@ int main()
     else if (choice == "7" || choice == "Darken and Lighten Image filter")
     {
         DarkenLightenImage(imagename);
+    }
+    else if (choice == "8" || choice == "Resize Image")
+    {
+        ResizeImage(imagename);
     }
 }
 //<<------------------------a way to edit on the same image ------------------------->>
@@ -411,6 +417,6 @@ int main()
 //     while (runOnce()) {
 //         // keeps repeating until user says "no"
 //     }
-//     cout << "Thank you for using our Baby photo. Goodbye!" << endl;
+//     cout << "Thank you for using our Baby photoshop. Goodbye!" << endl;
 //     return 0;
 // }

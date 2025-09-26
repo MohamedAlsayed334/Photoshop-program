@@ -18,7 +18,7 @@ string DarkenLightenImage(string filename)
         cout << "Enter darkening percentage (as a num.): ";
         cin >> percentage;
         factor = percentage / 100;
-        if (factor <= 0 || factor >= 1)
+        if (factor <= 0 || factor > 1)
         {
             cout << "Invalid factor. Please enter a percentage between 0% and 100%" << endl;
             DarkenLightenImage(filename);
@@ -40,7 +40,7 @@ string DarkenLightenImage(string filename)
         cout << "Enter lightening percentage (as a num.): ";
         cin >> percentage;
         factor = percentage / 100;
-        if (factor <= 0 || factor >= 1)
+        if (factor <= 0 || factor > 1)
         {
             cout << "Invalid factor. Please enter a percentage between 0% and 100%" << endl;
             DarkenLightenImage(filename);
