@@ -11,22 +11,15 @@ void GrayscaleConversion(string filename)
 {
     Image image(filename);
 
-    for (int i = 0; i < image.width; ++i)
-    {
-        for (int j = 0; j < image.height; ++j)
-        {
-            unsigned int avg = 0;
+      for (int i = 0; i < image.width; i++) {
+        for (int j = 0; j < image.height; j++) {
 
-            for (int k = 0; k < 3; ++k)
-            {
-                avg += image(i, j, k);
-            }
+            int red = image(i, j, 0);
+            int green = image(i, j, 1);
+            int blue = image(i, j, 2);
 
-            avg /= 3;
-
-            image(i, j, 0) = avg;
-            image(i, j, 1) = avg;
-            image(i, j, 2) = avg;
+            int Greyscale = red*0.299 + green*0.587 + blue*0.114;
+            image(i, j, 0) = image(i, j, 1) = image(i, j, 2) = Greyscale;
         }
     }
 
