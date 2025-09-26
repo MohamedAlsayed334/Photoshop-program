@@ -11,14 +11,16 @@ void GrayscaleConversion(string filename)
 {
     Image image(filename);
 
-      for (int i = 0; i < image.width; i++) {
-        for (int j = 0; j < image.height; j++) {
+    for (int i = 0; i < image.width; i++)
+    {
+        for (int j = 0; j < image.height; j++)
+        {
 
             int red = image(i, j, 0);
             int green = image(i, j, 1);
             int blue = image(i, j, 2);
 
-            int Greyscale = red*0.299 + green*0.587 + blue*0.114;
+            int Greyscale = red * 0.299 + green * 0.587 + blue * 0.114;
             image(i, j, 0) = image(i, j, 1) = image(i, j, 2) = Greyscale;
         }
     }
@@ -290,37 +292,41 @@ int rotate_image(string filename)
 }
 // filter 8 Resize Image
 
-
-
 // filter 9 Merge images
 
-void Merge_images(string &imagename, string &imagename2) {
+void Merge_images(string imagename, string imagename2)
+{
 
     Image image1(imagename);
     Image image2(imagename2);
 
     int width1 = image1.width, width2 = image2.width, height1 = image1.height, height2 = image2.height;
     int maxW, maxH;
-    if (width1 > width2) {
+    if (width1 > width2)
+    {
         maxW = width1;
     }
 
-    else maxW = width2;
+    else
+        maxW = width2;
 
-    if (height1 > height2) {
+    if (height1 > height2)
+    {
         maxH = height1;
     }
-    else maxH = height2;
+    else
+        maxH = height2;
 
-    resize_merge(imagename, maxW, maxH);
-    resize_merge(imagename2, maxW, maxH);
-
+    image1 = resize_merge(image1, maxW, maxH);
+    image2 = resize_merge(image2, maxW, maxH);
 
     Image image3(maxW, maxH);
 
-    for (int i = 0; i < image1.width; i++) {
+    for (int i = 0; i < image1.width; i++)
+    {
 
-        for (int j = 0; j < image1.height; j++) {
+        for (int j = 0; j < image1.height; j++)
+        {
 
             int red1 = image1(i, j, 0);
             int green1 = image1(i, j, 1);
@@ -330,15 +336,17 @@ void Merge_images(string &imagename, string &imagename2) {
             int green2 = image2(i, j, 1);
             int blue2 = image2(i, j, 2);
 
-            image3(i, j, 0) = round((red1+red2)/2);
-            image3(i, j, 1) = round((green1+green2)/2);
-            image3(i, j, 2) = round((blue1+blue2)/2);
+            image3(i, j, 0) = round((red1 + red2) / 2);
+            image3(i, j, 1) = round((green1 + green2) / 2);
+            image3(i, j, 2) = round((blue1 + blue2) / 2);
         }
     }
+    cout << "Pls enter image name to store new image\n";
+    cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+    cin >> imagename;
+    image3.saveImage(imagename);
+    cout << "Image saved successfully as " << imagename << endl;
 }
-
-
-
 
 //<<------------------------7------------------------->>
 // the filter num. 7 in our project
@@ -410,11 +418,12 @@ int main()
     {
         ResizeImage(imagename);
     }
-    else if (choice == "9" || choice == "Merge Images") {
+    else if (choice == "9" || choice == "Merge Images")
+    {
+        cout << "Please enter the second image name: ";
         string imagename2;
         cin >> imagename2;
         Merge_images(imagename, imagename2);
-
     }
 }
 //<<------------------------a way to edit on the same image ------------------------->>

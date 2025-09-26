@@ -36,7 +36,7 @@ void newimage(string filename, int &choice)
             float xold = i * factor_x;
             float yold = j * factor_y;
 
-            // 2. Round to nearest integer to go to nearest pixel
+            //  Round to nearest integer to go to nearest pixel
             int nearest_X = round(xold);
             int nearest_Y = round(yold);
 
@@ -81,9 +81,8 @@ void ResizeImage(string filename)
     }
 }
 
-void resize_merge(string filename, int &i_width, int &i_height)
+Image resize_merge(Image &image, int i_width, int i_height)
 {
-    Image image(filename);
 
     Image resizedImage(i_width, i_height);
 
@@ -97,8 +96,11 @@ void resize_merge(string filename, int &i_width, int &i_height)
             // make a new pixel to be in  old coordinates
             float xold = i * factor_x;
             float yold = j * factor_y;
-
-            // 2. Round to nearest integer to go to nearest pixel
+            if (image.width == i_width && image.height == i_height)
+            {
+                return image;
+            }
+            //  Round to nearest integer to go to nearest pixel
             int nearest_X = round(xold);
             int nearest_Y = round(yold);
 
@@ -113,6 +115,5 @@ void resize_merge(string filename, int &i_width, int &i_height)
         }
     }
 
-    image = resizedImage;
-    image.saveImage(filename);
+    return resizedImage;
 }
