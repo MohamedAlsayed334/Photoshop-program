@@ -288,6 +288,57 @@ int rotate_image(string filename)
     cout << "Image saved successfully as " << filename;
     return 0;
 }
+// filter 8 Resize Image
+
+
+
+// filter 9 Merge images
+
+void Merge_images(string &imagename, string &imagename2) {
+
+    Image image1(imagename);
+    Image image2(imagename2);
+
+    int width1 = image1.width, width2 = image2.width, height1 = image1.height, height2 = image2.height;
+    int maxW, maxH;
+    if (width1 > width2) {
+        maxW = width1;
+    }
+
+    else maxW = width2;
+
+    if (height1 > height2) {
+        maxH = height1;
+    }
+    else maxH = height2;
+
+    resize_merge(imagename, maxW, maxH);
+    resize_merge(imagename2, maxW, maxH);
+
+
+    Image image3(maxW, maxH);
+
+    for (int i = 0; i < image1.width; i++) {
+
+        for (int j = 0; j < image1.height; j++) {
+
+            int red1 = image1(i, j, 0);
+            int green1 = image1(i, j, 1);
+            int blue1 = image1(i, j, 2);
+
+            int red2 = image2(i, j, 0);
+            int green2 = image2(i, j, 1);
+            int blue2 = image2(i, j, 2);
+
+            image3(i, j, 0) = round((red1+red2)/2);
+            image3(i, j, 1) = round((green1+green2)/2);
+            image3(i, j, 2) = round((blue1+blue2)/2);
+        }
+    }
+}
+
+
+
 
 //<<------------------------7------------------------->>
 // the filter num. 7 in our project
@@ -324,6 +375,7 @@ int main()
     cout << "6- Rotation Image\n";
     cout << "7- Darken and Lighten Image filter\n";
     cout << "8- Resize Image\n";
+    cout << "9- Merge Images\n";
     cout << "Your choice: ";
     getline(cin, choice);
     if (choice == "1" || choice == "Grayscale Conversion")
@@ -357,6 +409,12 @@ int main()
     else if (choice == "8" || choice == "Resize Image")
     {
         ResizeImage(imagename);
+    }
+    else if (choice == "9" || choice == "Merge Images") {
+        string imagename2;
+        cin >> imagename2;
+        Merge_images(imagename, imagename2);
+
     }
 }
 //<<------------------------a way to edit on the same image ------------------------->>
