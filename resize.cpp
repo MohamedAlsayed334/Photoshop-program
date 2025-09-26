@@ -114,4 +114,5 @@ void resize_merge(string filename, int &i_width, int &i_height)
     }
 
     image = resizedImage;
+    image.saveImage(filename);
 }
