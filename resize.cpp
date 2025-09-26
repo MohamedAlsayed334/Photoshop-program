@@ -80,3 +80,38 @@ void ResizeImage(string filename)
         ResizeImage(filename);
     }
 }
+
+void resize_merge(string filename, int &i_width, int &i_height)
+{
+    Image image(filename);
+
+    Image resizedImage(i_width, i_height);
+
+    float factor_x = float(image.width) / i_width;
+    float factor_y = float(image.height) / i_height;
+
+    for (int i = 0; i < i_width; ++i)
+    {
+        for (int j = 0; j < i_height; ++j)
+        {
+            // make a new pixel to be in  old coordinates
+            float xold = i * factor_x;
+            float yold = j * factor_y;
+
+            // 2. Round to nearest integer to go to nearest pixel
+            int nearest_X = round(xold);
+            int nearest_Y = round(yold);
+
+            if (nearest_X >= image.width)
+                nearest_X = image.width - 1;
+            if (nearest_Y >= image.height)
+                nearest_Y = image.height - 1;
+
+            resizedImage(i, j, 0) = image(nearest_X, nearest_Y, 0);
+            resizedImage(i, j, 1) = image(nearest_X, nearest_Y, 1);
+            resizedImage(i, j, 2) = image(nearest_X, nearest_Y, 2);
+        }
+    }
+
+    image = resizedImage;
+}
