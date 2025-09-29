@@ -1,14 +1,12 @@
 #include <iostream>
 #include <string>
 #include "Image_Class.h"
-#include "Darken and Lighten Image filter .cpp"
-#include "resize.cpp"
 using namespace std;
 
 /* "بسم الله الرحمن الرحيم"
 -------------------------------------------
  Team Members:
- > Mazen ----------              20240---
+ > Mazen Sharif Al-Shahat        202400446
  Work Done : Filters 1 ,4
  > Mohammed ElSayed AbdEl-Hamid  20242268
  Work Done : Filters 2 ,5
@@ -257,7 +255,196 @@ int rotate_image(Image &filename)
     }
     return 0;
 }
+// filter 7 in our project
+// Darken and Lighten Image filter
+#include <iostream>
+#include <string>
+#include "Image_Class.h"
+using namespace std;
+void DarkenLightenImage(Image &img)
+{
+    int choice;
+    float factor, percentage;
+    cout << "Choose an option(you can choose by number):\n";
+    cout << "1. Darken Image\n";
+    cout << "2. Lighten Image\n";
+    cout << "Your choice: ";
+    cin >> choice;
+
+    if (choice == 1)
+    {
+        cout << "Enter darkening percentage (as a num.): ";
+        cin >> percentage;
+        factor = percentage / 100;
+        if (factor <= 0 || factor > 1)
+        {
+            cout << "Invalid factor. Please enter a percentage between 0% and 100%" << endl;
+            DarkenLightenImage(img);
+        }
+
+        for (int i = 0; i < img.width; ++i)
+        {
+            for (int j = 0; j < img.height; ++j)
+            {
+                for (int k = 0; k < 3; ++k)
+                {
+                    img(i, j, k) = img(i, j, k) * (1 - factor);
+                }
+            }
+        }
+    }
+    else if (choice == 2)
+    {
+        cout << "Enter lightening percentage (as a num.): ";
+        cin >> percentage;
+        factor = percentage / 100;
+        if (factor <= 0 || factor > 1)
+        {
+            cout << "Invalid factor. Please enter a percentage between 0% and 100%" << endl;
+            DarkenLightenImage(img);
+        }
+
+        for (int i = 0; i < img.width; ++i)
+        {
+            for (int j = 0; j < img.height; ++j)
+            {
+                for (int k = 0; k < 3; ++k)
+                {
+                    float num;
+                    num = img(i, j, k);
+                    num = num * (1 + factor);
+                    if (num > 255)
+                    {
+                        img(i, j, k) = 255;
+                    }
+                    else
+                    {
+                        img(i, j, k) = num;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        cout << "Invalid choice. Please choose 1 or 2." << endl;
+        DarkenLightenImage(img);
+    }
+}
 // filter 8 Resize Image
+#include <iostream>
+#include <string>
+#include "Image_Class.h"
+using namespace std;
+
+void newimage(Image &img, int &choice)
+{
+    cout << "please enter the new size of the image\n";
+    int newW, newH;
+    cout << "Width: ";
+    cin >> newW;
+    cout << "Height: ";
+    cin >> newH;
+    if ((newW >= img.width || newH >= img.height) && choice == 1)
+    {
+        cout << "Error: New dimensions must be less than the original dimensions, try again" << endl;
+        newimage(img, choice);
+    }
+    if ((newW <= img.width || newH <= img.height) && choice == 2)
+    {
+        cout << "Error: New dimensions must be greater than the original dimensions, try again" << endl;
+        newimage(img, choice);
+    }
+
+    Image resizedImage(newW, newH);
+
+    float factor_x = float(img.width) / newW;
+    float factor_y = float(img.height) / newH;
+
+    for (int i = 0; i < newW; ++i)
+    {
+        for (int j = 0; j < newH; ++j)
+        {
+            // make a new pixel to be in  old coordinates
+            float xold = i * factor_x;
+            float yold = j * factor_y;
+
+            //  Round to nearest integer to go to nearest pixel
+            int nearest_X = round(xold);
+            int nearest_Y = round(yold);
+
+            if (nearest_X >= img.width)
+                nearest_X = img.width - 1;
+            if (nearest_Y >= img.height)
+                nearest_Y = img.height - 1;
+
+            resizedImage(i, j, 0) = img(nearest_X, nearest_Y, 0);
+            resizedImage(i, j, 1) = img(nearest_X, nearest_Y, 1);
+            resizedImage(i, j, 2) = img(nearest_X, nearest_Y, 2);
+        }
+    }
+    img = resizedImage;
+}
+
+void ResizeImage(Image &img)
+{
+    cout << "Choose an option(you can choose by number):\n";
+    cout << "1. Shrink Image\n";
+    cout << "2. Stretch Image\n";
+    cout << "Your choice: ";
+    int choice;
+    cin >> choice;
+    if (choice == 1)
+    {
+        newimage(img, choice);
+    }
+    else if (choice == 2)
+    {
+        newimage(img, choice);
+    }
+    else
+    {
+        cout << "Invalid choice. Please choose 1 or 2." << endl;
+        ResizeImage(img);
+    }
+}
+
+Image resize_merge(Image &image, int i_width, int i_height)
+{
+
+    Image resizedImage(i_width, i_height);
+
+    float factor_x = float(image.width) / i_width;
+    float factor_y = float(image.height) / i_height;
+
+    for (int i = 0; i < i_width; ++i)
+    {
+        for (int j = 0; j < i_height; ++j)
+        {
+            // make a new pixel to be in  old coordinates
+            float xold = i * factor_x;
+            float yold = j * factor_y;
+            if (image.width == i_width && image.height == i_height)
+            {
+                return image;
+            }
+            //  Round to nearest integer to go to nearest pixel
+            int nearest_X = round(xold);
+            int nearest_Y = round(yold);
+
+            if (nearest_X >= image.width)
+                nearest_X = image.width - 1;
+            if (nearest_Y >= image.height)
+                nearest_Y = image.height - 1;
+
+            resizedImage(i, j, 0) = image(nearest_X, nearest_Y, 0);
+            resizedImage(i, j, 1) = image(nearest_X, nearest_Y, 1);
+            resizedImage(i, j, 2) = image(nearest_X, nearest_Y, 2);
+        }
+    }
+
+    return resizedImage;
+}
 
 // filter 9 Merge images
 
