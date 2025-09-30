@@ -7,9 +7,9 @@ using namespace std;
 -------------------------------------------
  Team Members:
  > Mazen Sherif Al-Shahat        20240446
- Work Done : Filters 1 ,4
+ Work Done : Filters 1 ,7 ,9
  > Mohammed ElSayed AbdEl-Hamid  20242268
- Work Done : Filters 2 ,5
+ Work Done : Filters 2 ,4 ,5 ,8
  > Mohammed Tamer Salah          20242272
  Work Done : Filters 3 ,6
 
@@ -257,10 +257,7 @@ int rotate_image(Image &filename)
 }
 // filter 7 in our project
 // Darken and Lighten Image filter
-#include <iostream>
-#include <string>
-#include "Image_Class.h"
-using namespace std;
+
 void DarkenLightenImage(Image &img)
 {
     int choice;
@@ -332,10 +329,6 @@ void DarkenLightenImage(Image &img)
     }
 }
 // filter 8 Resize Image
-#include <iostream>
-#include <string>
-#include "Image_Class.h"
-using namespace std;
 
 void newimage(Image &img, int &choice)
 {
@@ -497,9 +490,6 @@ void Merge_images(Image &img, string imagename2)
     img = image3;
 }
 
-//<<------------------------7------------------------->>
-// the filter num. 7 in our project
-//  Darken and Lighten Image filter
 //<<-----------------------10------------------------>>
 void Save_image(Image &img, const string &org_name) // it automatically checks if the extinction is right or not
 {
@@ -669,4 +659,3 @@ int main()
         }
     }
 }
-
