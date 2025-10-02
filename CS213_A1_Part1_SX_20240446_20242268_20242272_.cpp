@@ -330,79 +330,7 @@ void DarkenLightenImage(Image &img)
 }
 // filter 8 Resize Image
 
-void newimage(Image &img, int &choice)
-{
-    cout << "please enter the new size of the image\n";
-    int newW, newH;
-    cout << "Width: ";
-    cin >> newW;
-    cout << "Height: ";
-    cin >> newH;
-    if ((newW >= img.width || newH >= img.height) && choice == 1)
-    {
-        cout << "Error: New dimensions must be less than the original dimensions, try again" << endl;
-        newimage(img, choice);
-    }
-    if ((newW <= img.width || newH <= img.height) && choice == 2)
-    {
-        cout << "Error: New dimensions must be greater than the original dimensions, try again" << endl;
-        newimage(img, choice);
-    }
-
-    Image resizedImage(newW, newH);
-
-    float factor_x = float(img.width) / newW;
-    float factor_y = float(img.height) / newH;
-
-    for (int i = 0; i < newW; ++i)
-    {
-        for (int j = 0; j < newH; ++j)
-        {
-            // make a new pixel to be in  old coordinates
-            float xold = i * factor_x;
-            float yold = j * factor_y;
-
-            //  Round to nearest integer to go to nearest pixel
-            int nearest_X = round(xold);
-            int nearest_Y = round(yold);
-
-            if (nearest_X >= img.width)
-                nearest_X = img.width - 1;
-            if (nearest_Y >= img.height)
-                nearest_Y = img.height - 1;
-
-            resizedImage(i, j, 0) = img(nearest_X, nearest_Y, 0);
-            resizedImage(i, j, 1) = img(nearest_X, nearest_Y, 1);
-            resizedImage(i, j, 2) = img(nearest_X, nearest_Y, 2);
-        }
-    }
-    img = resizedImage;
-}
-
-void ResizeImage(Image &img)
-{
-    cout << "Choose an option(you can choose by number):\n";
-    cout << "1. Shrink Image\n";
-    cout << "2. Stretch Image\n";
-    cout << "Your choice: ";
-    int choice;
-    cin >> choice;
-    if (choice == 1)
-    {
-        newimage(img, choice);
-    }
-    else if (choice == 2)
-    {
-        newimage(img, choice);
-    }
-    else
-    {
-        cout << "Invalid choice. Please choose 1 or 2." << endl;
-        ResizeImage(img);
-    }
-}
-
-Image resize_merge(Image &image, int i_width, int i_height)
+Image resize(Image &image, int i_width, int i_height)
 {
 
     Image resizedImage(i_width, i_height);
@@ -435,8 +363,60 @@ Image resize_merge(Image &image, int i_width, int i_height)
             resizedImage(i, j, 2) = image(nearest_X, nearest_Y, 2);
         }
     }
-
+    image = resizedImage;
     return resizedImage;
+}
+void ResizeImage(Image &img)
+{
+    cout << "Choose an option(you can choose by number):\n";
+    cout << "1. Shrink Image\n";
+    cout << "2. Stretch Image\n";
+    cout << "Your choice: ";
+    int choice;
+    cin >> choice;
+    if (choice == 1)
+    {
+        cout << "please enter the new size of the image\n";
+        int i_width, i_height;
+        cout << "Width: ";
+        cin >> i_width;
+        cout << "Height: ";
+        cin >> i_height;
+        cin.ignore();
+        if (i_width >= img.width || i_height >= img.height)
+        {
+            cout << "Error: New dimensions must be less than the original dimensions, try again" << endl;
+            ResizeImage(img);
+        }
+        else
+        {
+            resize(img, i_width, i_height);
+        }
+    }
+    else if (choice == 2)
+    {
+        cout << "please enter the new size of the image\n";
+        int i_width, i_height;
+        cout << "Width: ";
+        cin >> i_width;
+        cout << "Height: ";
+        cin >> i_height;
+        cin.ignore();
+        if (i_width <= img.width || i_height <= img.height)
+        {
+            cout << "Error: New dimensions must be less than the original dimensions, try again" << endl;
+            ResizeImage(img);
+        }
+        else
+        {
+            resize(img, i_width, i_height);
+        }
+    }
+    else
+    {
+        cout << "Invalid choice. Please choose 1 or 2." << endl;
+        ResizeImage(img);
+    }
 }
 
 // filter 9 Merge images
@@ -463,8 +443,8 @@ void Merge_images(Image &img, string imagename2)
     else
         maxH = height2;
 
-    img = resize_merge(img, maxW, maxH);
-    image2 = resize_merge(image2, maxW, maxH);
+    img = resize(img, maxW, maxH);
+    image2 = resize(image2, maxW, maxH);
 
     Image image3(maxW, maxH);
 
@@ -512,7 +492,8 @@ void Save_image(Image &img, const string &org_name) // it automatically checks i
     }
     else
     {
-        cout << "Invalid response\n";
+        cout << "Invalid response ,try agin\n";
+        Save_image(img, org_name);
     }
 }
 //-------------------menu----------------------
@@ -560,7 +541,7 @@ int main()
             cout << "9- Merge Images\n";
             cout << "10- Save Image\n";
             cout << "11- Load New Image\n";
-            cout << "Your choice: " << "\n";
+            cout << "Your choice: ";
             getline(cin, choice);
             // cin.ignore(); <<---- سبب المشكله
             if (choice == "1" || choice == "Grayscale Conversion")
