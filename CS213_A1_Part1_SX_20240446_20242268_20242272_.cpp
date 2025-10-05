@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include "Image_Class.h"
+#include "look purple.cpp"
+#include "Sunlight.cpp"
 using namespace std;
 
 /* "بسم الله الرحمن الرحيم"
@@ -107,14 +109,14 @@ void Verticalflip(Image &image)
         for (int j = 0; j < image.width; ++j)
         {
             pixel tempR = image.getPixel(j, i, 0);
-            pixel tempB = image.getPixel(j, i, 1);
-            pixel tempG = image.getPixel(j, i, 2);
+            pixel tempG = image.getPixel(j, i, 1);
+            pixel tempB = image.getPixel(j, i, 2);
             image(j, i, 0) = image.getPixel(j, image.height - i - 1, 0);
             image(j, i, 1) = image.getPixel(j, image.height - i - 1, 1);
             image(j, i, 2) = image.getPixel(j, image.height - i - 1, 2);
             image(j, image.height - i - 1, 0) = tempR;
-            image(j, image.height - i - 1, 1) = tempB;
-            image(j, image.height - i - 1, 2) = tempG;
+            image(j, image.height - i - 1, 1) = tempG;
+            image(j, image.height - i - 1, 2) = tempB;
         }
     }
 }
@@ -125,14 +127,14 @@ void Horizontalflip(Image &image)
         for (int j = 0; j < image.height; ++j)
         {
             pixel tempR = image.getPixel(i, j, 0);
-            pixel tempB = image.getPixel(i, j, 1);
-            pixel tempG = image.getPixel(i, j, 2);
+            pixel tempG = image.getPixel(i, j, 1);
+            pixel tempB = image.getPixel(i, j, 2);
             image(i, j, 0) = image.getPixel(image.width - 1 - i, j, 0);
             image(i, j, 1) = image.getPixel(image.width - 1 - i, j, 1);
             image(i, j, 2) = image.getPixel(image.width - 1 - i, j, 2);
             image(image.width - 1 - i, j, 0) = tempR;
-            image(image.width - 1 - i, j, 1) = tempB;
-            image(image.width - 1 - i, j, 2) = tempG;
+            image(image.width - 1 - i, j, 1) = tempG;
+            image(image.width - 1 - i, j, 2) = tempB;
         }
     }
 }
@@ -162,6 +164,21 @@ void flipimage(Image &filename)
 //<<------------------------5------------------------->>
 // the filter num. 5 in our project
 //  crop the image
+
+Image CROP(Image &image, int height, int width, int x, int y)
+{
+    Image croppedImage(width, height);
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            croppedImage(i, j, 0) = image(x + i, y + j, 0);
+            croppedImage(i, j, 1) = image(x + i, y + j, 1);
+            croppedImage(i, j, 2) = image(x + i, y + j, 2);
+        }
+    }
+    return croppedImage;
+}
 void CropImage(Image &image)
 {
     cout << "pleas enter the x and y point that you will start to crop from\n";
@@ -181,32 +198,23 @@ void CropImage(Image &image)
         cout << "Error: Invalid crop dimensions,try again" << endl;
         CropImage(image);
     }
-    Image croppedImage(w, h);
-    for (int i = 0; i < w; ++i)
-    {
-        for (int j = 0; j < h; ++j)
-        {
-            croppedImage(i, j, 0) = image(x + i, y + j, 0);
-            croppedImage(i, j, 1) = image(x + i, y + j, 1);
-            croppedImage(i, j, 2) = image(x + i, y + j, 2);
-        }
-    }
-    image = croppedImage;
+
+    image = CROP(image, h, w, x, y);
 }
 
 //<<------------------------6------------------------->>
 // the filter num. 6 in our project
 //  rotate  the image by 90, 180, 270 degrees
-Image rotate90(Image &org) // Function to rotate the image 90 Degrees
+Image rotate90(Image &org)
 {
-    Image output(org.height, org.width); // here the width is the height of image & vice versa.
+    Image output(org.height, org.width);
     for (int i = 0; i < org.width; ++i)
     {
         for (int j = 0; j < org.height; ++j)
         {
             for (int k = 0; k < org.channels; ++k)
-                output(org.height - 1 - j, i, k) = org(i, j, k); // this formula calculates the new position of each pixel.
-        } // the index of new pos is (height of old image - 1 - the old col index ,  the old row index)
+                output(org.height - 1 - j, i, k) = org(i, j, k);
+        }
     }
     return output;
 }
@@ -219,11 +227,11 @@ Image rotate180(Image &org)
         {
             for (int k = 0; k < org.channels; ++k)
                 output(org.width - 1 - i, org.height - 1 - j, k) = org(i, j, k);
-        } // it is easier as it is just swap between pixels of height & Width.
+        }
     }
     return output;
 }
-Image rotate270(Image &org) //  also here the width is the height of image & vice versa.
+Image rotate270(Image &org)
 {
     Image output(org.height, org.width);
     for (int i = 0; i < org.width; ++i)
@@ -232,7 +240,7 @@ Image rotate270(Image &org) //  also here the width is the height of image & vic
         {
             for (int k = 0; k < org.channels; ++k)
                 output(j, org.width - 1 - i, k) = org(i, j, k);
-        } // the new position is ( the old col. index ,the old width - 1 - the old row index )
+        }
     }
     return output;
 }
@@ -507,17 +515,8 @@ int main()
         Image img;
         string imagename;
         cout << "Please enter the image name: ";
-        cin >> imagename;
-        cin.ignore(); // <------مهم جدا------->
-        // Input Buffer After cin >> imagename:
-        // ['i', 'm', 'a', 'g', 'e', '.', 'j', 'p', 'g', '\n']
-        // ↑
-        // After reading "image.jpg", the \n remains
-        // getline() sees the \n and thinks: "Oh, empty line entered!"
-        //     After cin.ignore():
-        // Input Buffer: [ ]  // Empty
-        // ↑
-        // getline() now waits for actual user input
+        getline(cin, imagename);
+
         if (!img.loadNewImage(imagename))
         {
             cout << "Error loading image!\n";
@@ -539,8 +538,10 @@ int main()
             cout << "7- Darken and Lighten Image filter\n";
             cout << "8- Resize Image\n";
             cout << "9- Merge Images\n";
-            cout << "10- Save Image\n";
-            cout << "11- Load New Image\n";
+            cout << "10- Wano Night (Purple look)\n";
+            cout << "11- Wano Sunlight\n";
+            cout << "12- Save Image\n";
+            cout << "13- Load New Image\n";
             cout << "Your choice: ";
             getline(cin, choice);
             // cin.ignore(); <<---- سبب المشكله
@@ -584,6 +585,14 @@ int main()
                 cin.ignore();
                 Merge_images(img, imagename2);
             }
+            else if (choice == "10" || choice == "Wano Night" || choice == "Purple look")
+            {
+                WanoNight(img);
+            }
+            else if (choice == "11" || choice == "Wano Sunlight")
+            {
+                WanoSunlight(img);
+            }
             else if (choice == "0")
             {
                 string saved;
@@ -595,12 +604,12 @@ int main()
                 }
                 running = 0; // <-- exit loop
             }
-            else if (choice == "10" || choice == "Save Image")
+            else if (choice == "12" || choice == "Save Image")
             {
                 Save_image(img, imagename);
                 running = 0;
             }
-            else if (choice == "11" || choice == "Laod New Image")
+            else if (choice == "13" || choice == "Laod New Image")
             {
                 string saved;
                 cout << "Do you want to save the changes before leaving? (Yes - No)";
