@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <cmath>
+#include <vector>
 #include "Image_Class.h"
 #include "look purple.cpp"
 #include "Sunlight.cpp"
@@ -504,6 +506,112 @@ void Save_image(Image &img, const string &org_name) // it automatically checks i
         Save_image(img, org_name);
     }
 }
+
+// filter 14 edge detection
+
+void edge_detection(Image& img) {
+    // 1- grey scale
+
+
+    for (int i = 0; i < img.width; i++) {
+        for (int j = 0; j < img.height; j++) {
+
+            int red = img(i, j, 0);
+            int green = img(i, j, 1);
+            int blue = img(i, j, 2);
+
+            int Greyscale = red*0.299 + green*0.587 + blue*0.114;
+            img(i, j, 0) = img(i, j, 1) = img(i, j, 2) = Greyscale;
+        }
+    }
+
+    // 2- gaussian filter (blur)
+
+    Image blured(img.width, img.height);
+
+    for (int i = 1; i < img.width-1; i++) {
+        for (int j = 1; j < img.height-1; j++) {
+
+            int val = img(i, j, 0)*4;
+            int new_val = 0;
+            vector<int> V1(8);
+            V1[0] = img(i, j+1, 0)*2;
+            V1[1] = img(i, j-1, 0)*2;
+            V1[2] = img(i-1, j-1, 0)*1;
+            V1[3] = img(i-1, j, 0)*2;
+            V1[4] = img(i-1, j+1, 0)*1;
+            V1[5] = img(i+1, j-1, 0)*1;
+            V1[6] = img(i+1, j, 0)*2;
+            V1[7] = img(i+1, j+1, 0)*1;
+
+            int cnt = val;
+            for (int k = 0; k <8; k++) {
+                cnt+=V1[k];
+            }
+
+            new_val = cnt/16;
+            blured(i, j, 0) = new_val;
+            blured(i, j, 1) = new_val;
+            blured(i, j, 2) = new_val;
+        }
+    }
+
+
+    // 3- sobel operator
+
+    Image edged_image(blured.width, blured.height);
+    Image edged_angles(blured.width, blured.height);
+
+
+    for (int i = 1; i < blured.width-1; i++) {
+        for (int j = 1; j < blured.height-1; j++) {
+
+            int val = blured(i, j, 0)*0;
+            int gx = val;
+
+            vector<int>V1(8);
+            V1[0] = blured(i-1, j-1, 0)*-1; V1[1] = blured(i-1, j, 0)*0;  V1[2] = blured(i-1, j+1, 0)*1;
+
+            V1[3] = blured(i, j-1, 0)*-2;                                 V1[4] = blured(i, j+1, 0)*2;
+
+            V1[5] = blured(i+1, j-1, 0)*-1; V1[6] = blured(i+1, j, 0)*0; V1[7] = blured(i+1, j+1, 0)*1;
+
+
+            for (int k = 0; k < 8; k++) {
+                gx+=V1[k];
+            }
+
+            // run the gy kernel
+
+            int gy = val;
+            vector<int>V2(8);
+            V2[0] = blured(i-1, j-1, 0)*-1; V2[1] = blured(i-1, j, 0)*-2; V2[2] = blured(i-1, j+1, 0)*-1;
+
+            V2[3] = blured(i, j-1, 0)*0;                                  V2[4] = blured(i, j+1, 0)*0;
+
+            V2[5] = blured(i+1, j-1, 0)*1;  V2[6] = blured(i+1, j, 0)*2;  V2[7] = blured(i+1, j+1, 0)*1;
+
+
+            for (int u = 0; u < 8; u++) {
+                gy+=V2[u];
+            }
+
+            double gradient_magnitude = sqrt(gx*gx + gy*gy);
+            int gm = gradient_magnitude;
+
+            (gradient_magnitude > 50)? gm = 0: gm = 255;
+            img(i, j, 0) = gm;
+            img(i, j, 1) = gm;
+            img(i, j, 2) = gm;
+
+
+        }
+    }
+}
+
+//=============================================
+//=============================================
+//=============================================
 //-------------------menu----------------------
 int main()
 {
@@ -542,6 +650,7 @@ int main()
             cout << "11- Wano Sunlight\n";
             cout << "12- Save Image\n";
             cout << "13- Load New Image\n";
+            cout << "14- Edge Detection\n";
             cout << "Your choice: ";
             getline(cin, choice);
             // cin.ignore(); <<---- سبب المشكله
@@ -637,6 +746,11 @@ int main()
                 {
                     cout << "Image loaded successfully: " << imagename << "\n";
                 }
+            }
+
+            else if (choice == "14" || choice =="Edge Detection") {
+
+                edge_detection(img);
             }
             else
             {
