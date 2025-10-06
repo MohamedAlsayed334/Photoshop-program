@@ -3,8 +3,6 @@
 #include <cmath>
 #include <vector>
 #include "Image_Class.h"
-#include "look purple.cpp"
-#include "Sunlight.cpp"
 using namespace std;
 
 /* "بسم الله الرحمن الرحيم"
@@ -480,7 +478,7 @@ void Merge_images(Image &img, string imagename2)
     img = image3;
 }
 
-//<<-----------------------10------------------------>>
+//<<-----------------------14------------------------>>
 void Save_image(Image &img, const string &org_name) // it automatically checks if the extinction is right or not
 {
     string filename;
@@ -507,125 +505,174 @@ void Save_image(Image &img, const string &org_name) // it automatically checks i
     }
 }
 
-// filter 14 edge detection
+// filter no. 10 Wano Night (Purple look)
+void WanoNight(Image &img)
+{
+    for (int i = 0; i < img.width; ++i)
+    {
+        for (int j = 0; j < img.height; ++j)
+        {
+            // purple tone
+            int r = int(img(i, j, 0) * 1.2); // More red
+            int g = int(img(i, j, 1) * 0.7); //  less green
+            int b = int(img(i, j, 2) * 1.3); // More blue
 
-void edge_detection(Image& img) {
-    // 1- grey scale
+            // make a valid range
+            r = min(r, 255);
+            b = min(b, 255);
 
-
-    for (int i = 0; i < img.width; i++) {
-        for (int j = 0; j < img.height; j++) {
-
-            int red = img(i, j, 0);
-            int green = img(i, j, 1);
-            int blue = img(i, j, 2);
-
-            int Greyscale = red*0.299 + green*0.587 + blue*0.114;
-            img(i, j, 0) = img(i, j, 1) = img(i, j, 2) = Greyscale;
+            img(i, j, 0) = r;
+            img(i, j, 1) = g;
+            img(i, j, 2) = b;
         }
     }
+}
+// filter no. 11 Wano Sunlight
+void WanoSunlight(Image &img)
+{
+    for (int i = 0; i < img.width; ++i)
+    {
+        for (int j = 0; j < img.height; ++j)
+        {
+            int r = int(img(i, j, 0) * 1.2);  // More red = more warm
+            int g = int(img(i, j, 1) * 1.1);  //  More green = make a yellow color with red
+            int b = int(img(i, j, 2) * 0.85); // less blue
+
+            // make a valid range
+            r = min(r, 255);
+            g = min(g, 255);
+
+            img(i, j, 0) = r;
+            img(i, j, 1) = g;
+            img(i, j, 2) = b;
+        }
+    }
+}
+// filter 12 edge detection
+
+void edge_detection(Image &img)
+{
+    // 1- grey scale
+
+    GrayscaleConversion(img);
 
     // 2- gaussian filter (blur)
 
     Image blured(img.width, img.height);
 
-    for (int i = 1; i < img.width-1; i++) {
-        for (int j = 1; j < img.height-1; j++) {
+    for (int i = 1; i < img.width - 1; i++)
+    {
+        for (int j = 1; j < img.height - 1; j++)
+        {
 
-            int val = img(i, j, 0)*4;
+            int val = img(i, j, 0) * 4;
             int new_val = 0;
             vector<int> V1(8);
-            V1[0] = img(i, j+1, 0)*2;
-            V1[1] = img(i, j-1, 0)*2;
-            V1[2] = img(i-1, j-1, 0)*1;
-            V1[3] = img(i-1, j, 0)*2;
-            V1[4] = img(i-1, j+1, 0)*1;
-            V1[5] = img(i+1, j-1, 0)*1;
-            V1[6] = img(i+1, j, 0)*2;
-            V1[7] = img(i+1, j+1, 0)*1;
+            V1[0] = img(i, j + 1, 0) * 2;
+            V1[1] = img(i, j - 1, 0) * 2;
+            V1[2] = img(i - 1, j - 1, 0) * 1;
+            V1[3] = img(i - 1, j, 0) * 2;
+            V1[4] = img(i - 1, j + 1, 0) * 1;
+            V1[5] = img(i + 1, j - 1, 0) * 1;
+            V1[6] = img(i + 1, j, 0) * 2;
+            V1[7] = img(i + 1, j + 1, 0) * 1;
 
             int cnt = val;
-            for (int k = 0; k <8; k++) {
-                cnt+=V1[k];
+            for (int k = 0; k < 8; k++)
+            {
+                cnt += V1[k];
             }
 
-            new_val = cnt/16;
+            new_val = cnt / 16;
             blured(i, j, 0) = new_val;
             blured(i, j, 1) = new_val;
             blured(i, j, 2) = new_val;
         }
     }
 
-
     // 3- sobel operator
 
     Image edged_image(blured.width, blured.height);
     Image edged_angles(blured.width, blured.height);
 
+    for (int i = 1; i < blured.width - 1; i++)
+    {
+        for (int j = 1; j < blured.height - 1; j++)
+        {
 
-    for (int i = 1; i < blured.width-1; i++) {
-        for (int j = 1; j < blured.height-1; j++) {
-
-            int val = blured(i, j, 0)*0;
+            int val = blured(i, j, 0) * 0;
             int gx = val;
 
-            vector<int>V1(8);
-            V1[0] = blured(i-1, j-1, 0)*-1; V1[1] = blured(i-1, j, 0)*0;  V1[2] = blured(i-1, j+1, 0)*1;
+            vector<int> V1(8);
+            V1[0] = blured(i - 1, j - 1, 0) * -1;
+            V1[1] = blured(i - 1, j, 0) * 0;
+            V1[2] = blured(i - 1, j + 1, 0) * 1;
 
-            V1[3] = blured(i, j-1, 0)*-2;                                 V1[4] = blured(i, j+1, 0)*2;
+            V1[3] = blured(i, j - 1, 0) * -2;
+            V1[4] = blured(i, j + 1, 0) * 2;
 
-            V1[5] = blured(i+1, j-1, 0)*-1; V1[6] = blured(i+1, j, 0)*0; V1[7] = blured(i+1, j+1, 0)*1;
+            V1[5] = blured(i + 1, j - 1, 0) * -1;
+            V1[6] = blured(i + 1, j, 0) * 0;
+            V1[7] = blured(i + 1, j + 1, 0) * 1;
 
-
-            for (int k = 0; k < 8; k++) {
-                gx+=V1[k];
+            for (int k = 0; k < 8; k++)
+            {
+                gx += V1[k];
             }
 
             // run the gy kernel
 
             int gy = val;
-            vector<int>V2(8);
-            V2[0] = blured(i-1, j-1, 0)*-1; V2[1] = blured(i-1, j, 0)*-2; V2[2] = blured(i-1, j+1, 0)*-1;
+            vector<int> V2(8);
+            V2[0] = blured(i - 1, j - 1, 0) * -1;
+            V2[1] = blured(i - 1, j, 0) * -2;
+            V2[2] = blured(i - 1, j + 1, 0) * -1;
 
-            V2[3] = blured(i, j-1, 0)*0;                                  V2[4] = blured(i, j+1, 0)*0;
+            V2[3] = blured(i, j - 1, 0) * 0;
+            V2[4] = blured(i, j + 1, 0) * 0;
 
-            V2[5] = blured(i+1, j-1, 0)*1;  V2[6] = blured(i+1, j, 0)*2;  V2[7] = blured(i+1, j+1, 0)*1;
+            V2[5] = blured(i + 1, j - 1, 0) * 1;
+            V2[6] = blured(i + 1, j, 0) * 2;
+            V2[7] = blured(i + 1, j + 1, 0) * 1;
 
-
-            for (int u = 0; u < 8; u++) {
-                gy+=V2[u];
+            for (int u = 0; u < 8; u++)
+            {
+                gy += V2[u];
             }
 
-            double gradient_magnitude = sqrt(gx*gx + gy*gy);
+            double gradient_magnitude = sqrt(gx * gx + gy * gy);
             int gm = gradient_magnitude;
 
-            (gradient_magnitude > 128)? gm = 0: gm = 255;
+            (gradient_magnitude > 128) ? gm = 0 : gm = 255;
             img(i, j, 0) = gm;
             img(i, j, 1) = gm;
             img(i, j, 2) = gm;
-
-
         }
     }
 }
 //===============================
-// filter 15 oil painting
-void oil_painting(Image &img) {
+// filter 13 oil painting
+void oil_painting(Image &img)
+{
 
     Image img2(img.width, img.height);
 
     int radius = 1;
     int intinsity_level = 20;
 
-    for (int i = 0; i < img.width; i++) {
-        for (int j = 0; j < img.height; j++) {
+    for (int i = 0; i < img.width; i++)
+    {
+        for (int j = 0; j < img.height; j++)
+        {
             vector<int> level_intensity(20, 0);
-            vector <int>r_level(20, 0);
-            vector <int>g_level(20, 0);
-            vector <int>b_level(20, 0);
+            vector<int> r_level(20, 0);
+            vector<int> g_level(20, 0);
+            vector<int> b_level(20, 0);
 
-            for (int x = -radius; x <= radius; x++) {
-                for (int y = -radius; y <= radius; y++) {
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
+                {
                     int pixelX = i + x;
                     int pixelY = j + y;
 
@@ -635,23 +682,24 @@ void oil_painting(Image &img) {
                         int green = img(pixelX, pixelY, 1);
                         int blue = img(pixelX, pixelY, 2);
 
-                        double intinsity = (red+green+blue)/3;
-                        int level =  (intinsity*intinsity_level)/256;
+                        double intinsity = (red + green + blue) / 3;
+                        int level = (intinsity * intinsity_level) / 256;
 
                         level_intensity[level]++;
-                        r_level[level]+=red;
-                        g_level[level]+=green;
-                        b_level[level]+=blue;
+                        r_level[level] += red;
+                        g_level[level] += green;
+                        b_level[level] += blue;
                     }
                 }
-
             }
 
             int max_level = 0;
             int max_index;
-            for (int i = 0; i <level_intensity.size(); i++) {
+            for (int i = 0; i < level_intensity.size(); i++)
+            {
 
-                if (level_intensity[i] > max_level) {
+                if (level_intensity[i] > max_level)
+                {
                     max_level = level_intensity[i];
                     max_index = i;
                 }
@@ -660,7 +708,6 @@ void oil_painting(Image &img) {
             int result_r = r_level[max_index] / max_level;
             int result_g = g_level[max_index] / max_level;
             int result_b = b_level[max_index] / max_level;
-
 
             img2(i, j, 0) = result_r;
             img2(i, j, 1) = result_g;
@@ -710,10 +757,10 @@ int main()
             cout << "9- Merge Images\n";
             cout << "10- Wano Night (Purple look)\n";
             cout << "11- Wano Sunlight\n";
-            cout << "12- Save Image\n";
-            cout << "13- Load New Image\n";
-            cout << "14- Edge Detection\n";
-            cout << "15- Oil Painting\n";
+            cout << "12- Edge Detection\n";
+            cout << "13- Oil Painting\n";
+            cout << "14- Save Image\n";
+            cout << "15- load New Image\n";
             cout << "Your choice: ";
             getline(cin, choice);
             // cin.ignore(); <<---- سبب المشكله
@@ -765,6 +812,17 @@ int main()
             {
                 WanoSunlight(img);
             }
+            else if (choice == "12" || choice == "Edge Detection")
+            {
+
+                edge_detection(img);
+            }
+
+            else if (choice == "13" || choice == "Oil Painting")
+            {
+
+                oil_painting(img);
+            }
             else if (choice == "0")
             {
                 string saved;
@@ -776,12 +834,12 @@ int main()
                 }
                 running = 0; // <-- exit loop
             }
-            else if (choice == "12" || choice == "Save Image")
+            else if (choice == "14" || choice == "Save Image")
             {
                 Save_image(img, imagename);
                 running = 0;
             }
-            else if (choice == "13" || choice == "Laod New Image")
+            else if (choice == "15" || choice == "Laod New Image")
             {
                 string saved;
                 cout << "Do you want to save the changes before leaving? (Yes - No)";
@@ -809,16 +867,6 @@ int main()
                 {
                     cout << "Image loaded successfully: " << imagename << "\n";
                 }
-            }
-
-            else if (choice == "14" || choice =="Edge Detection") {
-
-                edge_detection(img);
-            }
-
-            else if (choice == "15" || choice == "Oil Painting") {
-
-            oil_painting(img);
             }
             else
             {
