@@ -599,7 +599,7 @@ void edge_detection(Image& img) {
             double gradient_magnitude = sqrt(gx*gx + gy*gy);
             int gm = gradient_magnitude;
 
-            (gradient_magnitude > 50)? gm = 0: gm = 255;
+            (gradient_magnitude > 128)? gm = 0: gm = 255;
             img(i, j, 0) = gm;
             img(i, j, 1) = gm;
             img(i, j, 2) = gm;
