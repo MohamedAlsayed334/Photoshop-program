@@ -608,6 +608,68 @@ void edge_detection(Image& img) {
         }
     }
 }
+//===============================
+// filter 15 oil painting
+void oil_painting(Image &img) {
+
+    Image img2(img.width, img.height);
+
+    int radius = 1;
+    int intinsity_level = 20;
+
+    for (int i = 0; i < img.width; i++) {
+        for (int j = 0; j < img.height; j++) {
+            vector<int> level_intensity(20, 0);
+            vector <int>r_level(20, 0);
+            vector <int>g_level(20, 0);
+            vector <int>b_level(20, 0);
+
+            for (int x = -radius; x <= radius; x++) {
+                for (int y = -radius; y <= radius; y++) {
+                    int pixelX = i + x;
+                    int pixelY = j + y;
+
+                    if (pixelX >= 0 && pixelX < img.width && pixelY >= 0 && pixelY < img.height)
+                    {
+                        int red = img(pixelX, pixelY, 0);
+                        int green = img(pixelX, pixelY, 1);
+                        int blue = img(pixelX, pixelY, 2);
+
+                        double intinsity = (red+green+blue)/3;
+                        int level =  (intinsity*intinsity_level)/256;
+
+                        level_intensity[level]++;
+                        r_level[level]+=red;
+                        g_level[level]+=green;
+                        b_level[level]+=blue;
+                    }
+                }
+
+            }
+
+            int max_level = 0;
+            int max_index;
+            for (int i = 0; i <level_intensity.size(); i++) {
+
+                if (level_intensity[i] > max_level) {
+                    max_level = level_intensity[i];
+                    max_index = i;
+                }
+            }
+
+            int result_r = r_level[max_index] / max_level;
+            int result_g = g_level[max_index] / max_level;
+            int result_b = b_level[max_index] / max_level;
+
+
+            img2(i, j, 0) = result_r;
+            img2(i, j, 1) = result_g;
+            img2(i, j, 2) = result_b;
+        }
+    }
+
+    img = img2;
+}
 
 //=============================================
 //=============================================
@@ -651,6 +713,7 @@ int main()
             cout << "12- Save Image\n";
             cout << "13- Load New Image\n";
             cout << "14- Edge Detection\n";
+            cout << "15- Oil Painting\n";
             cout << "Your choice: ";
             getline(cin, choice);
             // cin.ignore(); <<---- سبب المشكله
@@ -751,6 +814,11 @@ int main()
             else if (choice == "14" || choice =="Edge Detection") {
 
                 edge_detection(img);
+            }
+
+            else if (choice == "15" || choice == "Oil Painting") {
+
+            oil_painting(img);
             }
             else
             {
