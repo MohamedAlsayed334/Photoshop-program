@@ -136,8 +136,8 @@ void invertimage(Image &image)
 Image resize(Image &image, int i_width, int i_height);
 Image CROP(Image &image, int height, int width, int x, int y);
 
-
-void Merge_Images(Image& img, Image img2) {
+void Merge_Images(Image &img, Image img2)
+{
 
     Image image3(img.width, img.height);
 
@@ -163,7 +163,8 @@ void Merge_Images(Image& img, Image img2) {
     img = image3;
 }
 
-void MERGE(Image &img, string img2name) {
+void MERGE(Image &img, string img2name)
+{
     Image img2(img2name);
 
     int width1 = img.width, width2 = img2.width, height1 = img.height, height2 = img2.height;
@@ -189,24 +190,26 @@ void MERGE(Image &img, string img2name) {
         minH = height1;
     }
 
-       if (width1 == width2 && height1 == height2)
-       {
-           Merge_Images(img, img2);
-       }
+    if (width1 == width2 && height1 == height2)
+    {
+        Merge_Images(img, img2);
+    }
 
-        else
-        {
+    else
+    {
         cout << "Your images do no have the same dimension, Choose an option: " << endl;
         cout << "Option 1- Resize both images to the largest dimensions\n";
         cout << "Option 2- Merge only the common area between the images (Notice that the image will be cropped)\n";
-        int option; cin >> option;
+        int option;
+        cin >> option;
         if (option == 1)
         {
             resize(img, maxW, maxH);
             resize(img2, maxW, maxH);
             Merge_Images(img, img2);
         }
-        else if (option == 2) {
+        else if (option == 2)
+        {
 
             img = CROP(img, minH, minW, 0, 0);
             img2 = CROP(img2, minH, minW, 0, 0);
@@ -217,7 +220,7 @@ void MERGE(Image &img, string img2name) {
 
 //<<------------------------5------------------------->>
 // the fifth filter in our project
-//flip the Image vertically and horizontally
+// flip the Image vertically and horizontally
 void Verticalflip(Image &image)
 {
 
@@ -444,6 +447,7 @@ void CropImage(Image &image)
     cin >> w;
     cout << "height:";
     cin >> h;
+    cin.ignore();
     if (x < 0 || y < 0 || w <= 0 || h <= 0 || x + w > image.width || y + h > image.height)
     {
         cout << "Error: Invalid crop dimensions,try again" << endl;
@@ -468,13 +472,25 @@ void Add_FrameStars(Image &img, int numStars, int thickness)
         int border = rand() % 4;
 
         if (border == 0)
-            { x = rand() % width; y = rand() % thickness; }
+        {
+            x = rand() % width;
+            y = rand() % thickness;
+        }
         else if (border == 1)
-            { x = rand() % width; y = height - thickness + (rand() % thickness); }
+        {
+            x = rand() % width;
+            y = height - thickness + (rand() % thickness);
+        }
         else if (border == 2)
-            { x = rand() % thickness; y = rand() % height; }
+        {
+            x = rand() % thickness;
+            y = rand() % height;
+        }
         else
-            { x = width - thickness + (rand() % thickness); y = rand() % height; }
+        {
+            x = width - thickness + (rand() % thickness);
+            y = rand() % height;
+        }
 
         unsigned char r = 255, g = 255, b = 200;
 
@@ -498,7 +514,7 @@ void Add_FrameStars(Image &img, int numStars, int thickness)
     }
 }
 
-Image Add_Frame(const Image& org)
+Image Add_Frame(const Image &org)
 {
     int thickness = 0;
     int frameStyle = 0;
@@ -536,7 +552,8 @@ Image Add_Frame(const Image& org)
     else if (choice == "2" || choice == "Fancy Frame" || choice == "fancy frame")
     {
         cout << "Enter frame thickness (pixels): ";
-        if (!(cin >> thickness)) thickness = 10;
+        if (!(cin >> thickness))
+            thickness = 10;
         cout << "G = Gradient\n> ";
         char styleChoice;
         cin >> styleChoice;
@@ -549,8 +566,12 @@ Image Add_Frame(const Image& org)
 
             if (special == "1" || special == "gold")
             {
-                cR = 184; cG = 134; cB = 0;       // top
-                cR2 = 200; cG2 = 150; cB2 = 0;    // bottom
+                cR = 184;
+                cG = 134;
+                cB = 0; // top
+                cR2 = 200;
+                cG2 = 150;
+                cB2 = 0; // bottom
             }
             else if (special == "2" || special == "silver")
             {
@@ -559,8 +580,12 @@ Image Add_Frame(const Image& org)
             }
             else if (special == "3" || special == "bronze")
             {
-                cR = 102; cG = 51; cB = 0;
-                cR2 = 205; cG2 = 127;  cB2 = 50;
+                cR = 102;
+                cG = 51;
+                cB = 0;
+                cR2 = 205;
+                cG2 = 127;
+                cB2 = 50;
             }
             else // custom
             {
@@ -606,7 +631,7 @@ Image Add_Frame(const Image& org)
                 for (int c = 0; c < 3; ++c)
                 {
                     Frame.setPixel(x, y, c,
-                        org.getPixel(x - thickness, y - thickness, c));
+                                   org.getPixel(x - thickness, y - thickness, c));
                 }
             }
             else
@@ -614,7 +639,9 @@ Image Add_Frame(const Image& org)
                 unsigned char r, g, b;
                 if (frameStyle == 0)
                 {
-                    r = cR; g = cG; b = cB;
+                    r = cR;
+                    g = cG;
+                    b = cB;
                 }
                 else if (frameStyle == 1)
                 {
@@ -848,7 +875,7 @@ vector<vector<vector<long long>>> buildSummedTable(const Image &img)
 
     // summed[y][x][channel]
     vector<vector<vector<long long>>> summed(height,
-        vector<vector<long long>>(width, vector<long long>(3, 0)));
+                                             vector<vector<long long>>(width, vector<long long>(3, 0)));
 
     // initialize first pixel
     for (int c = 0; c < 3; c++)
@@ -860,37 +887,38 @@ vector<vector<vector<long long>>> buildSummedTable(const Image &img)
     for (int x = 1; x < width; x++)
     {
         for (int c = 0; c < 3; c++)
-      {
-            summed[0][x][c] = img.getPixel(x, 0, c) + summed[0][x-1][c];
-      }
+        {
+            summed[0][x][c] = img.getPixel(x, 0, c) + summed[0][x - 1][c];
+        }
     }
 
     // first column
     for (int y = 1; y < height; y++)
     {
         for (int c = 0; c < 3; c++)
-      {
-            summed[y][0][c] = img.getPixel(0, y, c) + summed[y-1][0][c];
-      }
+        {
+            summed[y][0][c] = img.getPixel(0, y, c) + summed[y - 1][0][c];
+        }
     }
 
     // rest of the table
     for (int y = 1; y < height; y++)
     {
         for (int x = 1; x < width; x++)
-      {
+        {
             for (int c = 0; c < 3; c++)
-          {
-                summed[y][x][c] = img.getPixel(x, y, c) + summed[y-1][x][c] + summed[y][x-1][c] - summed[y-1][x-1][c];
-          }
-      }
+            {
+                summed[y][x][c] = img.getPixel(x, y, c) + summed[y - 1][x][c] + summed[y][x - 1][c] - summed[y - 1][x - 1][c];
+            }
+        }
     }
 
     return summed;
 }
 
 // Box blur using summed-area table
-Image boxBlur(const Image &img) {
+Image boxBlur(const Image &img)
+{
     int k = 0;
     cout << "Enter the size of kernel (a.k.a. how blurry of image) : ";
     cin >> k;
@@ -900,20 +928,26 @@ Image boxBlur(const Image &img) {
 
     auto summed = buildSummedTable(img);
 
-    for (int y = 0; y < height ; y++) {
-        for (int x = 0; x < width ; x++) {
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
             // rectangle corners
-            int x1 = max(0,x-k);
-            int y1 = max(0,y-k);
+            int x1 = max(0, x - k);
+            int y1 = max(0, y - k);
             int x2 = min(width - 1, x + k);
             int y2 = min(height - 1, y + k);
 
-            long long area = static_cast<long long>(x2 - x1 + 1)*(y2 - y1 +1);
-            for (int c = 0; c < 3; c++) {
+            long long area = static_cast<long long>(x2 - x1 + 1) * (y2 - y1 + 1);
+            for (int c = 0; c < 3; c++)
+            {
                 long long total = summed[y2][x2][c];
-                if (x1 > 0) total -= summed[y2][x1-1][c];
-                if (y1 > 0) total -= summed[y1-1][x2][c];
-                if (x1 > 0 && y1 > 0) total += summed[y1-1][x1-1][c];
+                if (x1 > 0)
+                    total -= summed[y2][x1 - 1][c];
+                if (y1 > 0)
+                    total -= summed[y1 - 1][x2][c];
+                if (x1 > 0 && y1 > 0)
+                    total += summed[y1 - 1][x1 - 1][c];
 
                 int avg = static_cast<int>(total / area);
                 blurred.setPixel(x, y, c, avg);
@@ -1134,7 +1168,7 @@ int main()
             {
                 img = Add_Frame(img);
             }
-            else if (choice == "10" || choice == "Edge Detection Image" )
+            else if (choice == "10" || choice == "Edge Detection Image")
             {
                 edge_detection(img);
             }
@@ -1150,13 +1184,12 @@ int main()
             else if (choice == "13" || choice == "Wano Sunlight")
             {
                 WanoSunlight(img);
-
             }
-             else if (choice == "14" || choice == "Oil Image")
+            else if (choice == "14" || choice == "Oil Image")
             {
                 oil_painting(img);
             }
-            else if (choice == "16" || choice == "Wano Night"|| choice == "Purple look")
+            else if (choice == "16" || choice == "Wano Night" || choice == "Purple look")
             {
                 WanoNight(img);
             }
