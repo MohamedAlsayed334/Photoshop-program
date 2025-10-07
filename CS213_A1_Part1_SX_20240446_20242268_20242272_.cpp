@@ -2,6 +2,10 @@
 #include <string>
 #include <cmath>
 #include <vector>
+#include <limits>
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
 #include "Image_Class.h"
 using namespace std;
 
@@ -9,11 +13,11 @@ using namespace std;
 -------------------------------------------
  Team Members:
  > Mazen Sherif Al-Shahat        20240446
- Work Done : Filters 1 ,7 ,9
+ Work Done : Filters 1,4,7,10
  > Mohammed ElSayed AbdEl-Hamid  20242268
- Work Done : Filters 2 ,4 ,5 ,8
+ Work Done : Filters 2,5,8,11
  > Mohammed Tamer Salah          20242272
- Work Done : Filters 3 ,6
+ Work Done : Filters 3,6,9,12
 
  Menu was Done By All Team Members.
 -------------------------------------------
@@ -25,9 +29,35 @@ using namespace std;
  4 - Flip Image flips the image horizontally & vertically.
  5 - Crop Image crops the image to specified size & part of image.
  6 - Rotation Image rotates the image by 90 , 180 , 270 Degrees.
+( Will be replaced by Diagram Doc isa)
  -------------------------------------------
  */
-
+//<<-----------------------00------------------------>>
+void Save_image(Image &img, const string &org_name) // it automatically checks if the extinction is right or not
+{
+    string filename;
+    string Y_N;
+    cout << "Would you like to save the image by the old name or not? (Yes/No)";
+    cin >> Y_N;
+    if (Y_N == "Yes" || Y_N == "yes")
+    {
+        img.saveImage(org_name);
+        cout << "Image saved successfully as " << org_name << endl;
+    }
+    else if (Y_N == "No" || Y_N == "no")
+    {
+        cout << "Pls enter image name to store new image\n";
+        cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+        cin >> filename;
+        img.saveImage(filename);
+        cout << "Image saved successfully as " << filename << endl;
+    }
+    else
+    {
+        cout << "Invalid response ,try agin\n";
+        Save_image(img, org_name);
+    }
+}
 //<<------------------------1------------------------->>
 // the first step in the project
 // converting a colored image to gray scale image
@@ -100,7 +130,60 @@ void invertimage(Image &image)
 
 //<<------------------------4------------------------->>
 // the fourth filter in our project
-//  flip the Image vertically and horizontally
+// Merging two different images into one
+Image resize(Image &image, int i_width, int i_height);
+// I prototyped the function to solve the scope problem as Merge Function is above resize however it uses resize function before declaring it.
+void Merge_images(Image &img, string imagename2)
+{
+
+    Image image2(imagename2);
+
+    int width1 = img.width, width2 = image2.width, height1 = img.height, height2 = image2.height;
+    int maxW, maxH;
+    if (width1 > width2)
+    {
+        maxW = width1;
+    }
+
+    else
+        maxW = width2;
+
+    if (height1 > height2)
+    {
+        maxH = height1;
+    }
+    else
+        maxH = height2;
+
+    img = resize(img, maxW, maxH);
+    image2 = resize(image2, maxW, maxH);
+
+    Image image3(maxW, maxH);
+
+    for (int i = 0; i < img.width; i++)
+    {
+
+        for (int j = 0; j < img.height; j++)
+        {
+
+            int red1 = img(i, j, 0);
+            int green1 = img(i, j, 1);
+            int blue1 = img(i, j, 2);
+
+            int red2 = image2(i, j, 0);
+            int green2 = image2(i, j, 1);
+            int blue2 = image2(i, j, 2);
+
+            image3(i, j, 0) = round((red1 + red2) / 2);
+            image3(i, j, 1) = round((green1 + green2) / 2);
+            image3(i, j, 2) = round((blue1 + blue2) / 2);
+        }
+    }
+    img = image3;
+}
+//<<------------------------5------------------------->>
+// the fifth filter in our project
+//flip the Image vertically and horizontally
 void Verticalflip(Image &image)
 {
 
@@ -160,48 +243,6 @@ void flipimage(Image &filename)
         flipimage(filename);
     }
 }
-
-//<<------------------------5------------------------->>
-// the filter num. 5 in our project
-//  crop the image
-
-Image CROP(Image &image, int height, int width, int x, int y)
-{
-    Image croppedImage(width, height);
-    for (int i = 0; i < width; ++i)
-    {
-        for (int j = 0; j < height; ++j)
-        {
-            croppedImage(i, j, 0) = image(x + i, y + j, 0);
-            croppedImage(i, j, 1) = image(x + i, y + j, 1);
-            croppedImage(i, j, 2) = image(x + i, y + j, 2);
-        }
-    }
-    return croppedImage;
-}
-void CropImage(Image &image)
-{
-    cout << "pleas enter the x and y point that you will start to crop from\n";
-    int x, y;
-    cout << "x:";
-    cin >> x;
-    cout << "y:";
-    cin >> y;
-    cout << "pleas enter the width and height of the cropped image\n";
-    int w, h;
-    cout << "width:";
-    cin >> w;
-    cout << "height:";
-    cin >> h;
-    if (x < 0 || y < 0 || w <= 0 || h <= 0 || x + w > image.width || y + h > image.height)
-    {
-        cout << "Error: Invalid crop dimensions,try again" << endl;
-        CropImage(image);
-    }
-
-    image = CROP(image, h, w, x, y);
-}
-
 //<<------------------------6------------------------->>
 // the filter num. 6 in our project
 //  rotate  the image by 90, 180, 270 degrees
@@ -263,6 +304,7 @@ int rotate_image(Image &filename)
     }
     return 0;
 }
+//<<------------------------7------------------------->>
 // filter 7 in our project
 // Darken and Lighten Image filter
 
@@ -336,220 +378,240 @@ void DarkenLightenImage(Image &img)
         DarkenLightenImage(img);
     }
 }
-// filter 8 Resize Image
+//<<------------------------8------------------------->>
+// the filter num. 8 in our project
+//  crop the image
 
-Image resize(Image &image, int i_width, int i_height)
+Image CROP(Image &image, int height, int width, int x, int y)
 {
-
-    Image resizedImage(i_width, i_height);
-
-    float factor_x = float(image.width) / i_width;
-    float factor_y = float(image.height) / i_height;
-
-    for (int i = 0; i < i_width; ++i)
+    Image croppedImage(width, height);
+    for (int i = 0; i < width; ++i)
     {
-        for (int j = 0; j < i_height; ++j)
+        for (int j = 0; j < height; ++j)
         {
-            // make a new pixel to be in  old coordinates
-            float xold = i * factor_x;
-            float yold = j * factor_y;
-            if (image.width == i_width && image.height == i_height)
+            croppedImage(i, j, 0) = image(x + i, y + j, 0);
+            croppedImage(i, j, 1) = image(x + i, y + j, 1);
+            croppedImage(i, j, 2) = image(x + i, y + j, 2);
+        }
+    }
+    return croppedImage;
+}
+void CropImage(Image &image)
+{
+    cout << "pleas enter the x and y point that you will start to crop from\n";
+    int x, y;
+    cout << "x:";
+    cin >> x;
+    cout << "y:";
+    cin >> y;
+    cout << "pleas enter the width and height of the cropped image\n";
+    int w, h;
+    cout << "width:";
+    cin >> w;
+    cout << "height:";
+    cin >> h;
+    if (x < 0 || y < 0 || w <= 0 || h <= 0 || x + w > image.width || y + h > image.height)
+    {
+        cout << "Error: Invalid crop dimensions,try again" << endl;
+        CropImage(image);
+    }
+
+    image = CROP(image, h, w, x, y);
+}
+//<<------------------------9------------------------->>
+// filter 9 Frame Image
+// framing an image with a simple or fancy frame
+void Add_FrameStars(Image &img, int numStars, int thickness)
+{
+    srand(static_cast<unsigned int>(time(nullptr)));
+
+    int width = img.width;
+    int height = img.height;
+
+    for (int n = 0; n < numStars; ++n)
+    {
+        int x, y;
+        int border = rand() % 4;
+
+        if (border == 0)
+            { x = rand() % width; y = rand() % thickness; }
+        else if (border == 1)
+            { x = rand() % width; y = height - thickness + (rand() % thickness); }
+        else if (border == 2)
+            { x = rand() % thickness; y = rand() % height; }
+        else
+            { x = width - thickness + (rand() % thickness); y = rand() % height; }
+
+        unsigned char r = 255, g = 255, b = 200;
+
+        for (int dy = -1; dy <= 1; ++dy)
+        {
+            for (int dx = -1; dx <= 1; ++dx)
             {
-                return image;
+                if (abs(dx) + abs(dy) <= 1)
+                {
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                    {
+                        img.setPixel(nx, ny, 0, r);
+                        img.setPixel(nx, ny, 1, g);
+                        img.setPixel(nx, ny, 2, b);
+                    }
+                }
             }
-            //  Round to nearest integer to go to nearest pixel
-            int nearest_X = round(xold);
-            int nearest_Y = round(yold);
-
-            if (nearest_X >= image.width)
-                nearest_X = image.width - 1;
-            if (nearest_Y >= image.height)
-                nearest_Y = image.height - 1;
-
-            resizedImage(i, j, 0) = image(nearest_X, nearest_Y, 0);
-            resizedImage(i, j, 1) = image(nearest_X, nearest_Y, 1);
-            resizedImage(i, j, 2) = image(nearest_X, nearest_Y, 2);
         }
     }
-    image = resizedImage;
-    return resizedImage;
 }
-void ResizeImage(Image &img)
+
+Image Add_Frame(const Image& org)
 {
-    cout << "Choose an option(you can choose by number):\n";
-    cout << "1. Shrink Image\n";
-    cout << "2. Stretch Image\n";
-    cout << "Your choice: ";
-    int choice;
-    cin >> choice;
-    if (choice == 1)
+    int thickness = 0;
+    int frameStyle = 0;
+    unsigned char cR = 0, cG = 0, cB = 0;
+    unsigned char cR2 = 255, cG2 = 255, cB2 = 255;
+    int numstar = 0;
+
+    string choice;
+    cout << "Choose frame style:\n1- Simple Frame\n2- Fancy Frame\n> ";
+    getline(cin, choice);
+
+    if (choice == "1" || choice == "Simple Frame" || choice == "simple frame")
     {
-        cout << "please enter the new size of the image\n";
-        int i_width, i_height;
-        cout << "Width: ";
-        cin >> i_width;
-        cout << "Height: ";
-        cin >> i_height;
-        cin.ignore();
-        if (i_width >= img.width || i_height >= img.height)
+        cout << "Enter frame thickness (pixels): ";
+        if (!(cin >> thickness))
+            thickness = 10;
+        cout << "S = Solid color\nC = Checkerboard\n> ";
+        char styleChoice;
+        cin >> styleChoice;
+        if (styleChoice == 'S' || styleChoice == 's')
         {
-            cout << "Error: New dimensions must be less than the original dimensions, try again" << endl;
-            ResizeImage(img);
+            frameStyle = 0;
+            int rr, gg, bb;
+            cout << "Enter RGB color values (0 - 255 each): ";
+            cin >> rr >> gg >> bb;
+            cR = static_cast<unsigned char>(clamp(rr, 0, 255));
+            cG = static_cast<unsigned char>(clamp(gg, 0, 255));
+            cB = static_cast<unsigned char>(clamp(bb, 0, 255));
         }
         else
         {
-            resize(img, i_width, i_height);
+            frameStyle = 1;
         }
     }
-    else if (choice == 2)
+    else if (choice == "2" || choice == "Fancy Frame" || choice == "fancy frame")
     {
-        cout << "please enter the new size of the image\n";
-        int i_width, i_height;
-        cout << "Width: ";
-        cin >> i_width;
-        cout << "Height: ";
-        cin >> i_height;
-        cin.ignore();
-        if (i_width <= img.width || i_height <= img.height)
+        cout << "Enter frame thickness (pixels): ";
+        if (!(cin >> thickness)) thickness = 10;
+        cout << "G = Gradient\n> ";
+        char styleChoice;
+        cin >> styleChoice;
+        if (styleChoice == 'G' || styleChoice == 'g')
         {
-            cout << "Error: New dimensions must be less than the original dimensions, try again" << endl;
-            ResizeImage(img);
-        }
-        else
-        {
-            resize(img, i_width, i_height);
+            frameStyle = 2;
+            cout << "1- Gold\n2- Silver\n3- Bronze\n4- Custom\n> ";
+            string special;
+            cin >> special;
+
+            if (special == "1" || special == "gold")
+            {
+                cR = 184; cG = 134; cB = 0;       // top
+                cR2 = 200; cG2 = 150; cB2 = 0;    // bottom
+            }
+            else if (special == "2" || special == "silver")
+            {
+                cR = cG = cB = 105;
+                cR2 = cG2 = cB2 = 230;
+            }
+            else if (special == "3" || special == "bronze")
+            {
+                cR = 102; cG = 51; cB = 0;
+                cR2 = 205; cG2 = 127;  cB2 = 50;
+            }
+            else // custom
+            {
+                int rr, gg, bb;
+                cout << "Enter first RGB color (top): ";
+                cin >> rr >> gg >> bb;
+                cR = static_cast<unsigned char>(clamp(rr, 0, 255));
+                cG = static_cast<unsigned char>(clamp(gg, 0, 255));
+                cB = static_cast<unsigned char>(clamp(bb, 0, 255));
+
+                cout << "Enter second RGB color (bottom): ";
+                cin >> rr >> gg >> bb;
+                cR2 = static_cast<unsigned char>(clamp(rr, 0, 255));
+                cG2 = static_cast<unsigned char>(clamp(gg, 0, 255));
+                cB2 = static_cast<unsigned char>(clamp(bb, 0, 255));
+            }
+
+            cout << "Choose number of stars (20 / 40 / 80): ";
+            cin >> numstar;
         }
     }
     else
     {
-        cout << "Invalid choice. Please choose 1 or 2." << endl;
-        ResizeImage(img);
-    }
-}
-
-// filter 9 Merge images
-
-void Merge_images(Image &img, string imagename2)
-{
-
-    Image image2(imagename2);
-
-    int width1 = img.width, width2 = image2.width, height1 = img.height, height2 = image2.height;
-    int maxW, maxH;
-    if (width1 > width2)
-    {
-        maxW = width1;
+        cout << "Invalid choice! Defaulting to solid black frame.\n";
+        frameStyle = 0;
+        cR = cG = cB = 0;
     }
 
-    else
-        maxW = width2;
+    // flush newline left in stream so future getline works.
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    if (height1 > height2)
+    int F_width = org.width + 2 * thickness;
+    int F_height = org.height + 2 * thickness;
+    Image Frame(F_width, F_height);
+
+    for (int y = 0; y < F_height; ++y)
     {
-        maxH = height1;
-    }
-    else
-        maxH = height2;
-
-    img = resize(img, maxW, maxH);
-    image2 = resize(image2, maxW, maxH);
-
-    Image image3(maxW, maxH);
-
-    for (int i = 0; i < img.width; i++)
-    {
-
-        for (int j = 0; j < img.height; j++)
+        for (int x = 0; x < F_width; ++x)
         {
+            bool inside = (x >= thickness && x < thickness + org.width && y >= thickness && y < thickness + org.height);
+            if (inside)
+            {
+                for (int c = 0; c < 3; ++c)
+                {
+                    Frame.setPixel(x, y, c,
+                        org.getPixel(x - thickness, y - thickness, c));
+                }
+            }
+            else
+            {
+                unsigned char r, g, b;
+                if (frameStyle == 0)
+                {
+                    r = cR; g = cG; b = cB;
+                }
+                else if (frameStyle == 1)
+                {
+                    if (((x / 10) + (y / 10)) % 2 == 0)
+                        r = g = b = 255;
+                    else
+                        r = g = b = 0;
+                }
+                else // gradient
+                {
+                    double t = static_cast<double>(y) / max(1, F_height - 1);
+                    r = static_cast<unsigned char>((1 - t) * cR + t * cR2);
+                    g = static_cast<unsigned char>((1 - t) * cG + t * cG2);
+                    b = static_cast<unsigned char>((1 - t) * cB + t * cB2);
+                }
 
-            int red1 = img(i, j, 0);
-            int green1 = img(i, j, 1);
-            int blue1 = img(i, j, 2);
-
-            int red2 = image2(i, j, 0);
-            int green2 = image2(i, j, 1);
-            int blue2 = image2(i, j, 2);
-
-            image3(i, j, 0) = round((red1 + red2) / 2);
-            image3(i, j, 1) = round((green1 + green2) / 2);
-            image3(i, j, 2) = round((blue1 + blue2) / 2);
+                Frame.setPixel(x, y, 0, r);
+                Frame.setPixel(x, y, 1, g);
+                Frame.setPixel(x, y, 2, b);
+            }
         }
     }
-    img = image3;
+    if (numstar > 0)
+    {
+        Add_FrameStars(Frame, numstar, thickness);
+    }
+    return Frame;
 }
-
-//<<-----------------------14------------------------>>
-void Save_image(Image &img, const string &org_name) // it automatically checks if the extinction is right or not
-{
-    string filename;
-    string Y_N;
-    cout << "Would you like to save the image by the old name or not? (Yes/No)";
-    cin >> Y_N;
-    if (Y_N == "Yes" || Y_N == "yes")
-    {
-        img.saveImage(org_name);
-        cout << "Image saved successfully as " << org_name << endl;
-    }
-    else if (Y_N == "No" || Y_N == "no")
-    {
-        cout << "Pls enter image name to store new image\n";
-        cout << "and specify extension .jpg, .bmp, .png, .tga: ";
-        cin >> filename;
-        img.saveImage(filename);
-        cout << "Image saved successfully as " << filename << endl;
-    }
-    else
-    {
-        cout << "Invalid response ,try agin\n";
-        Save_image(img, org_name);
-    }
-}
-
-// filter no. 10 Wano Night (Purple look)
-void WanoNight(Image &img)
-{
-    for (int i = 0; i < img.width; ++i)
-    {
-        for (int j = 0; j < img.height; ++j)
-        {
-            // purple tone
-            int r = int(img(i, j, 0) * 1.2); // More red
-            int g = int(img(i, j, 1) * 0.7); //  less green
-            int b = int(img(i, j, 2) * 1.3); // More blue
-
-            // make a valid range
-            r = min(r, 255);
-            b = min(b, 255);
-
-            img(i, j, 0) = r;
-            img(i, j, 1) = g;
-            img(i, j, 2) = b;
-        }
-    }
-}
-// filter no. 11 Wano Sunlight
-void WanoSunlight(Image &img)
-{
-    for (int i = 0; i < img.width; ++i)
-    {
-        for (int j = 0; j < img.height; ++j)
-        {
-            int r = int(img(i, j, 0) * 1.2);  // More red = more warm
-            int g = int(img(i, j, 1) * 1.1);  //  More green = make a yellow color with red
-            int b = int(img(i, j, 2) * 0.85); // less blue
-
-            // make a valid range
-            r = min(r, 255);
-            g = min(g, 255);
-
-            img(i, j, 0) = r;
-            img(i, j, 1) = g;
-            img(i, j, 2) = b;
-        }
-    }
-}
-// filter 12 edge detection
-
+//<<------------------------10------------------------>>
+// filter 10 edge detection
+// edge detecting image
 void edge_detection(Image &img)
 {
     // 1- grey scale
@@ -650,8 +712,208 @@ void edge_detection(Image &img)
         }
     }
 }
-//===============================
-// filter 13 oil painting
+//<<------------------------11------------------------>>
+// filter 11 Resize Image
+
+Image resize(Image &image, int i_width, int i_height)
+{
+
+    Image resizedImage(i_width, i_height);
+
+    float factor_x = float(image.width) / i_width;
+    float factor_y = float(image.height) / i_height;
+
+    for (int i = 0; i < i_width; ++i)
+    {
+        for (int j = 0; j < i_height; ++j)
+        {
+            // make a new pixel to be in  old coordinates
+            float xold = i * factor_x;
+            float yold = j * factor_y;
+            if (image.width == i_width && image.height == i_height)
+            {
+                return image;
+            }
+            //  Round to nearest integer to go to nearest pixel
+            int nearest_X = round(xold);
+            int nearest_Y = round(yold);
+
+            if (nearest_X >= image.width)
+                nearest_X = image.width - 1;
+            if (nearest_Y >= image.height)
+                nearest_Y = image.height - 1;
+
+            resizedImage(i, j, 0) = image(nearest_X, nearest_Y, 0);
+            resizedImage(i, j, 1) = image(nearest_X, nearest_Y, 1);
+            resizedImage(i, j, 2) = image(nearest_X, nearest_Y, 2);
+        }
+    }
+    image = resizedImage;
+    return resizedImage;
+}
+void ResizeImage(Image &img)
+{
+    cout << "Choose an option(you can choose by number):\n";
+    cout << "1. Shrink Image\n";
+    cout << "2. Stretch Image\n";
+    cout << "Your choice: ";
+    int choice;
+    cin >> choice;
+    if (choice == 1)
+    {
+        cout << "please enter the new size of the image\n";
+        int i_width, i_height;
+        cout << "Width: ";
+        cin >> i_width;
+        cout << "Height: ";
+        cin >> i_height;
+        cin.ignore();
+        if (i_width >= img.width || i_height >= img.height)
+        {
+            cout << "Error: New dimensions must be less than the original dimensions, try again" << endl;
+            ResizeImage(img);
+        }
+        else
+        {
+            resize(img, i_width, i_height);
+        }
+    }
+    else if (choice == 2)
+    {
+        cout << "please enter the new size of the image\n";
+        int i_width, i_height;
+        cout << "Width: ";
+        cin >> i_width;
+        cout << "Height: ";
+        cin >> i_height;
+        cin.ignore();
+        if (i_width <= img.width || i_height <= img.height)
+        {
+            cout << "Error: New dimensions must be less than the original dimensions, try again" << endl;
+            ResizeImage(img);
+        }
+        else
+        {
+            resize(img, i_width, i_height);
+        }
+    }
+    else
+    {
+        cout << "Invalid choice. Please choose 1 or 2." << endl;
+        ResizeImage(img);
+    }
+}
+//<<-----------------------12------------------------>>
+// Filter 12 Blur Image (end of Hero level)
+// bluring images by box blur algorithm.
+// Building summed-area table (integral image)
+vector<vector<vector<long long>>> buildSummedTable(const Image &img)
+{
+    int width = img.width;
+    int height = img.height;
+
+    // summed[y][x][channel]
+    vector<vector<vector<long long>>> summed(height,
+        vector<vector<long long>>(width, vector<long long>(3, 0)));
+
+    // initialize first pixel
+    for (int c = 0; c < 3; c++)
+    {
+        summed[0][0][c] = img.getPixel(0, 0, c);
+    }
+
+    // first row
+    for (int x = 1; x < width; x++)
+    {
+        for (int c = 0; c < 3; c++)
+      {
+            summed[0][x][c] = img.getPixel(x, 0, c) + summed[0][x-1][c];
+      }
+    }
+
+    // first column
+    for (int y = 1; y < height; y++)
+    {
+        for (int c = 0; c < 3; c++)
+      {
+            summed[y][0][c] = img.getPixel(0, y, c) + summed[y-1][0][c];
+      }
+    }
+
+    // rest of the table
+    for (int y = 1; y < height; y++)
+    {
+        for (int x = 1; x < width; x++)
+      {
+            for (int c = 0; c < 3; c++)
+          {
+                summed[y][x][c] = img.getPixel(x, y, c) + summed[y-1][x][c] + summed[y][x-1][c] - summed[y-1][x-1][c];
+          }
+      }
+    }
+
+    return summed;
+}
+
+// Box blur using summed-area table
+Image boxBlur(const Image &img) {
+    int k = 0;
+    cout << "Enter the size of kernel (a.k.a. how blurry of image) : ";
+    cin >> k;
+    int width = img.width;
+    int height = img.height;
+    Image blurred(width, height);
+
+    auto summed = buildSummedTable(img);
+
+    for (int y = 0; y < height ; y++) {
+        for (int x = 0; x < width ; x++) {
+            // rectangle corners
+            int x1 = max(0,x-k);
+            int y1 = max(0,y-k);
+            int x2 = min(width - 1, x + k);
+            int y2 = min(height - 1, y + k);
+
+            long long area = static_cast<long long>(x2 - x1 + 1)*(y2 - y1 +1);
+            for (int c = 0; c < 3; c++) {
+                long long total = summed[y2][x2][c];
+                if (x1 > 0) total -= summed[y2][x1-1][c];
+                if (y1 > 0) total -= summed[y1-1][x2][c];
+                if (x1 > 0 && y1 > 0) total += summed[y1-1][x1-1][c];
+
+                int avg = static_cast<int>(total / area);
+                blurred.setPixel(x, y, c, avg);
+            }
+        }
+    }
+
+    return blurred;
+}
+
+//<<-----------------------13------------------------>>
+// filter no. 13 Wano Sunlight
+void WanoSunlight(Image &img)
+{
+    for (int i = 0; i < img.width; ++i)
+    {
+        for (int j = 0; j < img.height; ++j)
+        {
+            int r = int(img(i, j, 0) * 1.2);  // More red = more warm
+            int g = int(img(i, j, 1) * 1.1);  //  More green = make a yellow color with red
+            int b = int(img(i, j, 2) * 0.85); // less blue
+
+            // make a valid range
+            r = min(r, 255);
+            g = min(g, 255);
+
+            img(i, j, 0) = r;
+            img(i, j, 1) = g;
+            img(i, j, 2) = b;
+        }
+    }
+}
+//<<-----------------------14------------------------>>
+// filter 14 oil painting
 void oil_painting(Image &img)
 {
 
@@ -717,6 +979,36 @@ void oil_painting(Image &img)
 
     img = img2;
 }
+//<<-----------------------15------------------------>>
+// filter no.15 Wano Old TV
+//<<-----------------------16------------------------>>
+// filter no. 16 Wano Night (Purple look)
+void WanoNight(Image &img)
+{
+    for (int i = 0; i < img.width; ++i)
+    {
+        for (int j = 0; j < img.height; ++j)
+        {
+            // purple tone
+            int r = int(img(i, j, 0) * 1.2); // More red
+            int g = int(img(i, j, 1) * 0.7); //  less green
+            int b = int(img(i, j, 2) * 1.3); // More blue
+
+            // make a valid range
+            r = min(r, 255);
+            b = min(b, 255);
+
+            img(i, j, 0) = r;
+            img(i, j, 1) = g;
+            img(i, j, 2) = b;
+        }
+    }
+}
+//<<-----------------------17------------------------>>
+// filter Samurai infrared effect
+
+//<<-----------------------18------------------------>>
+// filter Skewing Images
 
 //=============================================
 //=============================================
@@ -746,24 +1038,28 @@ int main()
             string choice;
             cout << "Please choose the filter (you can choose by number):\n";
             cout << "0- Exit Program\n";
+            cout << "00- Save Image\n";
+            cout << "000- load New Image\n";
             cout << "1- Grayscale Conversion\n";
             cout << "2- Black and White\n";
             cout << "3- Invert Image colors\n";
-            cout << "4- Flip Image\n";
-            cout << "5- Crop Image\n";
+            cout << "4- Merge Images\n";
+            cout << "5- Flip Image\n";
             cout << "6- Rotation Image\n";
             cout << "7- Darken and Lighten Image filter\n";
-            cout << "8- Resize Image\n";
-            cout << "9- Merge Images\n";
-            cout << "10- Wano Night (Purple look)\n";
-            cout << "11- Wano Sunlight\n";
-            cout << "12- Edge Detection\n";
-            cout << "13- Oil Painting\n";
-            cout << "14- Save Image\n";
-            cout << "15- load New Image\n";
+            cout << "8- Crop Image\n";
+            cout << "9- Frame Image\n";
+            cout << "10- Edge Detection\n";
+            cout << "11- Resize Image\n";
+            cout << "12- Blur Image\n";
+            cout << "13- Wano Sunlight\n";
+            cout << "14- Oil Painting\n";
+            cout << "15- \n";
+            cout << "16- Wano Night (Purple look)\n";
+            cout << "17- \n";
+            cout << "18- \n";
             cout << "Your choice: ";
             getline(cin, choice);
-            // cin.ignore(); <<---- سبب المشكله
             if (choice == "1" || choice == "Grayscale Conversion")
             {
                 GrayscaleConversion(img);
@@ -776,13 +1072,17 @@ int main()
             {
                 invertimage(img);
             }
-            else if (choice == "4" || choice == "Flip Image")
+            else if (choice == "4" || choice == "Merge Image")
+            {
+                cout << "Please enter the second image name: ";
+                string imagename2;
+                cin >> imagename2;
+                cin.ignore();
+                Merge_images(img, imagename2);
+            }
+            else if (choice == "5" || choice == "Flip Image")
             {
                 flipimage(img);
-            }
-            else if (choice == "5" || choice == "Crop Image")
-            {
-                CropImage(img);
             }
             else if (choice == "6" || choice == "Rotation Image")
             {
@@ -792,36 +1092,39 @@ int main()
             {
                 DarkenLightenImage(img);
             }
-            else if (choice == "8" || choice == "Resize Image")
+            else if (choice == "8" || choice == "Crop Image")
+            {
+                CropImage(img);
+            }
+            else if (choice == "9" || choice == "Frame Images")
+            {
+                img = Add_Frame(img);
+            }
+            else if (choice == "10" || choice == "Edge Detection Image" )
+            {
+                edge_detection(img);
+            }
+            else if (choice == "11" || choice == "Resize Image")
             {
                 ResizeImage(img);
             }
-            else if (choice == "9" || choice == "Merge Images")
+            else if (choice == "12" || choice == "Blur Image")
             {
-                cout << "Please enter the second image name: ";
-                string imagename2;
-                cin >> imagename2;
-                cin.ignore();
-                Merge_images(img, imagename2);
+                img = boxBlur(img);
             }
-            else if (choice == "10" || choice == "Wano Night" || choice == "Purple look")
-            {
-                WanoNight(img);
-            }
-            else if (choice == "11" || choice == "Wano Sunlight")
+
+            else if (choice == "13" || choice == "Wano Sunlight")
             {
                 WanoSunlight(img);
+
             }
-            else if (choice == "12" || choice == "Edge Detection")
+             else if (choice == "14" || choice == "Oil Image")
             {
-
-                edge_detection(img);
-            }
-
-            else if (choice == "13" || choice == "Oil Painting")
-            {
-
                 oil_painting(img);
+            }
+            else if (choice == "16" || choice == "Wano Night"|| choice == "Purple look")
+            {
+                WanoNight(img);
             }
             else if (choice == "0")
             {
@@ -834,12 +1137,12 @@ int main()
                 }
                 running = 0; // <-- exit loop
             }
-            else if (choice == "14" || choice == "Save Image")
+            else if (choice == "00" || choice == "Save Image")
             {
                 Save_image(img, imagename);
                 running = 0;
             }
-            else if (choice == "15" || choice == "Laod New Image")
+            else if (choice == "000" || choice == "Laod New Image")
             {
                 string saved;
                 cout << "Do you want to save the changes before leaving? (Yes - No)";
