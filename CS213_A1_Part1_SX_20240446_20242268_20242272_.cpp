@@ -1075,6 +1075,35 @@ void WanoNight(Image &img)
 //<<-----------------------17------------------------>>
 // filter Samurai infrared effect
 
+void Infrared_Image(Image &img)
+{
+    for (int y = 0; y < img.height; ++y)
+    {
+        for (int x = 0; x < img.width; ++x)
+        {
+            unsigned char R, G, B;
+            R = img(x,y,0);
+            G = img(x,y,1);
+            B = img(x,y,2);
+
+            float intensity = 0.299f * R + 0.587f * G + 0.114f * B;
+            intensity = 255.0f - intensity;
+            float t = intensity / 255.0f;
+            unsigned char r, g, b;
+            r = 255;
+            g = static_cast<unsigned char>(11 + t * (255 - 11));
+            b = static_cast<unsigned char>(11 + t * (255 - 11));
+
+            r = min(255,max(0,int(r)));
+            g = min(255,max(0,int(g)));
+            b = min(255,max(0,int(b)));
+
+            img(x,y,0) = r;
+            img(x,y,1) = g;
+            img(x,y,2) = b;
+        }
+    }
+}
 //<<-----------------------18------------------------>>
 // filter Skewing Images
 
@@ -1124,7 +1153,7 @@ int main()
             cout << "14- Oil Painting\n";
             cout << "15- \n";
             cout << "16- Wano Night (Purple look)\n";
-            cout << "17- \n";
+            cout << "17- Infrared Image\n";
             cout << "18- \n";
             cout << "Your choice: ";
             getline(cin, choice);
@@ -1192,6 +1221,10 @@ int main()
             else if (choice == "16" || choice == "Wano Night" || choice == "Purple look")
             {
                 WanoNight(img);
+            }
+             else if (choice == "17" || choice == "Infrared Image" )
+            {
+                Infrared_Image(img);
             }
             else if (choice == "0")
             {
