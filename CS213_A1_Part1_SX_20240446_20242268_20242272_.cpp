@@ -129,36 +129,17 @@ void invertimage(Image &image)
 }
 
 //<<------------------------4------------------------->>
-// the fourth filter in our project
+// the fourth filter
 // Merging two different images into one
+// forward declaration of resize and crop function to be used in the merge function
+
 Image resize(Image &image, int i_width, int i_height);
-// I prototyped the function to solve the scope problem as Merge Function is above resize however it uses resize function before declaring it.
-void Merge_images(Image &img, string imagename2)
-{
+Image CROP(Image &image, int height, int width, int x, int y);
 
-    Image image2(imagename2);
 
-    int width1 = img.width, width2 = image2.width, height1 = img.height, height2 = image2.height;
-    int maxW, maxH;
-    if (width1 > width2)
-    {
-        maxW = width1;
-    }
+void Merge_Images(Image& img, Image img2) {
 
-    else
-        maxW = width2;
-
-    if (height1 > height2)
-    {
-        maxH = height1;
-    }
-    else
-        maxH = height2;
-
-    img = resize(img, maxW, maxH);
-    image2 = resize(image2, maxW, maxH);
-
-    Image image3(maxW, maxH);
+    Image image3(img.width, img.height);
 
     for (int i = 0; i < img.width; i++)
     {
@@ -170,9 +151,9 @@ void Merge_images(Image &img, string imagename2)
             int green1 = img(i, j, 1);
             int blue1 = img(i, j, 2);
 
-            int red2 = image2(i, j, 0);
-            int green2 = image2(i, j, 1);
-            int blue2 = image2(i, j, 2);
+            int red2 = img2(i, j, 0);
+            int green2 = img2(i, j, 1);
+            int blue2 = img2(i, j, 2);
 
             image3(i, j, 0) = round((red1 + red2) / 2);
             image3(i, j, 1) = round((green1 + green2) / 2);
@@ -181,6 +162,59 @@ void Merge_images(Image &img, string imagename2)
     }
     img = image3;
 }
+
+void MERGE(Image &img, string img2name) {
+    Image img2(img2name);
+
+    int width1 = img.width, width2 = img2.width, height1 = img.height, height2 = img2.height;
+    int maxW, maxH, minW, minH;
+    if (width1 > width2)
+    {
+        maxW = width1;
+        minW = width2;
+    }
+    else
+    {
+        maxW = width2;
+        minW = width1;
+    }
+    if (height1 > height2)
+    {
+        maxH = height1;
+        minH = height2;
+    }
+    else
+    {
+        maxH = height2;
+        minH = height1;
+    }
+
+       if (width1 == width2 && height1 == height2)
+       {
+           Merge_Images(img, img2);
+       }
+
+        else
+        {
+        cout << "Your images do no have the same dimension, Choose an option: " << endl;
+        cout << "Option 1- Resize both images to the largest dimensions\n";
+        cout << "Option 2- Merge only the common area between the images (Notice that the image will be cropped)\n";
+        int option; cin >> option;
+        if (option == 1)
+        {
+            resize(img, maxW, maxH);
+            resize(img2, maxW, maxH);
+            Merge_Images(img, img2);
+        }
+        else if (option == 2) {
+
+            img = CROP(img, minH, minW, 0, 0);
+            img2 = CROP(img2, minH, minW, 0, 0);
+            Merge_Images(img, img2);
+        }
+    }
+}
+
 //<<------------------------5------------------------->>
 // the fifth filter in our project
 //flip the Image vertically and horizontally
@@ -1076,9 +1110,9 @@ int main()
             {
                 cout << "Please enter the second image name: ";
                 string imagename2;
-                cin >> imagename2;
-                cin.ignore();
-                Merge_images(img, imagename2);
+                getline(cin, imagename2);
+                // cin.ignore();
+                MERGE(img, imagename2);
             }
             else if (choice == "5" || choice == "Flip Image")
             {
