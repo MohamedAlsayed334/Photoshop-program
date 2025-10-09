@@ -8,6 +8,8 @@
 #include <ctime>
 #include "Image_Class.h"
 using namespace std;
+vector<Image> undo;
+vector<Image> redo;
 
 /* "بسم الله الرحمن الرحيم"
 -------------------------------------------
@@ -58,12 +60,44 @@ void Save_image(Image &img, const string &org_name) // it automatically checks i
         Save_image(img, org_name);
     }
 }
+//<<-----------------------[-/+] -> [undo/redo] ------------------------->>
+
+void save_current(const Image img)
+{
+    undo.push_back(img);
+    redo.clear();
+}
+void undo_function(Image &img)
+{
+    if (undo.empty())
+    {
+        cout << "No more undos available." << endl;
+        return;
+    }
+    redo.push_back(img);
+    img = undo.back();
+    undo.pop_back();
+    cout << "Undo performed." << endl;
+}
+void redo_function(Image &img)
+{
+    if (redo.empty())
+    {
+        cout << "No more redos available." << endl;
+        return;
+    }
+    undo.push_back(img);
+    img = redo.back();
+    redo.pop_back();
+    cout << "Redo performed." << endl;
+}
+
 //<<------------------------1------------------------->>
 // the first step in the project
 // converting a colored image to gray scale image
 void GrayscaleConversion(Image &image)
 {
-
+    save_current(image);
     for (int i = 0; i < image.width; i++)
     {
         for (int j = 0; j < image.height; j++)
@@ -83,6 +117,7 @@ void GrayscaleConversion(Image &image)
 //  converting a colored image to black and white image
 void BlackWhiteConvertion(Image &image)
 {
+    save_current(image);
     for (int i = 0; i < image.width; ++i)
     {
         for (int j = 0; j < image.height; ++j)
@@ -115,6 +150,7 @@ void BlackWhiteConvertion(Image &image)
 //  Invert the Image colors
 void invertimage(Image &image)
 {
+    save_current(image);
     for (int i = 0; i < image.width; ++i)
     {
         for (int j = 0; j < image.height; ++j)
@@ -165,6 +201,7 @@ void Merge_Images(Image &img, Image img2)
 
 void MERGE(Image &img, string img2name)
 {
+    save_current(img);
     Image img2(img2name);
 
     int width1 = img.width, width2 = img2.width, height1 = img.height, height2 = img2.height;
@@ -260,6 +297,7 @@ void Horizontalflip(Image &image)
 }
 void flipimage(Image &filename)
 {
+    save_current(filename);
     cout << "Which flip do you want?\n";
     cout << "1- Vertical flip\n";
     cout << "2- Horizontal flip\n";
@@ -324,6 +362,7 @@ Image rotate270(Image &org)
 }
 int rotate_image(Image &filename)
 {
+    save_current(filename);
     int Degree;
     cout << "Enter rotation degree (90 / 180 / 270): ";
     cin >> Degree;
@@ -347,6 +386,7 @@ int rotate_image(Image &filename)
 
 void DarkenLightenImage(Image &img)
 {
+    save_current(img);
     int choice;
     float factor, percentage;
     cout << "Choose an option(you can choose by number):\n";
@@ -435,6 +475,7 @@ Image CROP(Image &image, int height, int width, int x, int y)
 }
 void CropImage(Image &image)
 {
+    save_current(image);
     cout << "pleas enter the x and y point that you will start to crop from\n";
     int x, y;
     cout << "x:";
@@ -516,6 +557,7 @@ void Add_FrameStars(Image &img, int numStars, int thickness)
 
 Image Add_Frame(const Image &org)
 {
+    save_current(org);
     int thickness = 0;
     int frameStyle = 0;
     unsigned char cR = 0, cG = 0, cB = 0;
@@ -675,6 +717,7 @@ Image Add_Frame(const Image &org)
 // edge detecting image
 void edge_detection(Image &img)
 {
+    save_current(img);
     // 1- grey scale
 
     GrayscaleConversion(img);
@@ -814,6 +857,7 @@ Image resize(Image &image, int i_width, int i_height)
 }
 void ResizeImage(Image &img)
 {
+    save_current(img);
     cout << "Choose an option(you can choose by number):\n";
     cout << "1. Shrink Image\n";
     cout << "2. Stretch Image\n";
@@ -919,6 +963,7 @@ vector<vector<vector<long long>>> buildSummedTable(const Image &img)
 // Box blur using summed-area table
 Image boxBlur(const Image &img)
 {
+    save_current(img);
     int k = 0;
     cout << "Enter the size of kernel (a.k.a. how blurry of image) : ";
     cin >> k;
@@ -962,6 +1007,7 @@ Image boxBlur(const Image &img)
 // filter no. 13 Wano Sunlight
 void WanoSunlight(Image &img)
 {
+    save_current(img);
     for (int i = 0; i < img.width; ++i)
     {
         for (int j = 0; j < img.height; ++j)
@@ -984,7 +1030,7 @@ void WanoSunlight(Image &img)
 // filter 14 oil painting
 void oil_painting(Image &img)
 {
-
+    save_current(img);
     Image img2(img.width, img.height);
 
     int radius = 1;
@@ -1053,6 +1099,7 @@ void oil_painting(Image &img)
 // filter no. 16 Wano Night (Purple look)
 void WanoNight(Image &img)
 {
+    save_current(img);
     for (int i = 0; i < img.width; ++i)
     {
         for (int j = 0; j < img.height; ++j)
@@ -1077,14 +1124,15 @@ void WanoNight(Image &img)
 
 void Infrared_Image(Image &img)
 {
+    save_current(img);
     for (int y = 0; y < img.height; ++y)
     {
         for (int x = 0; x < img.width; ++x)
         {
             unsigned char R, G, B;
-            R = img(x,y,0);
-            G = img(x,y,1);
-            B = img(x,y,2);
+            R = img(x, y, 0);
+            G = img(x, y, 1);
+            B = img(x, y, 2);
 
             float intensity = 0.299f * R + 0.587f * G + 0.114f * B;
             intensity = 255.0f - intensity;
@@ -1094,18 +1142,82 @@ void Infrared_Image(Image &img)
             g = static_cast<unsigned char>(11 + t * (255 - 11));
             b = static_cast<unsigned char>(11 + t * (255 - 11));
 
-            r = min(255,max(0,int(r)));
-            g = min(255,max(0,int(g)));
-            b = min(255,max(0,int(b)));
+            r = min(255, max(0, int(r)));
+            g = min(255, max(0, int(g)));
+            b = min(255, max(0, int(b)));
 
-            img(x,y,0) = r;
-            img(x,y,1) = g;
-            img(x,y,2) = b;
+            img(x, y, 0) = r;
+            img(x, y, 1) = g;
+            img(x, y, 2) = b;
         }
     }
 }
 //<<-----------------------18------------------------>>
 // filter Skewing Images
+//<<-----------------------19------------------------>>
+// filter increase Saturation
+/*------------------- Description --------------------
+
+ this filter makes the colors stronger and more vivid
+ by make the user enter the percentage of saturation he need to make
+
+*/
+void image_Saturation(Image &img)
+{
+    save_current(img);
+    string choice;
+    float factor, percentage;
+    cout << "Choose an option(you can choose by number):\n";
+    cout << "1. Increase Saturation\n";
+    cout << "2. Decrease Saturation\n";
+    cout << "Your choice: ";
+    cin >> choice;
+    if (choice == "1" || choice == "Increase Saturation")
+    {
+        cout << "Enter Increase Saturation percentage (as a num.): ";
+        cin >> percentage;
+        factor = percentage / 100;
+        if (factor <= 0 || factor > 1)
+        {
+            cout << "Invalid factor. Please enter a percentage between 0% and 100%" << endl;
+            image_Saturation(img);
+        }
+    }
+    else if (choice == "2" || choice == "Decrease Saturation")
+    {
+        cout << "Enter Decrease Saturation percentage (as a num.): ";
+        cin >> percentage;
+        factor = percentage / 100;
+        if (factor <= 0 || factor > 1)
+        {
+            cout << "Invalid factor. Please enter a percentage between 0% and 100%" << endl;
+            image_Saturation(img);
+        }
+    }
+    else
+    {
+        cout << "Invalid choice. Please choose 1 or 2." << endl;
+        image_Saturation(img);
+    }
+    Image gray_img = img;
+    GrayscaleConversion(gray_img);
+    factor = 1 + (percentage / 100.0);
+    for (int i = 0; i < img.width; i++)
+    {
+        for (int j = 0; j < img.height; j++)
+        {
+            double r = gray_img(i, j, 0);
+            double g = gray_img(i, j, 1);
+            double b = gray_img(i, j, 2);
+            r = r + (img(i, j, 0) - r) * factor;
+            g = g + (img(i, j, 1) - g) * factor;
+            b = b + (img(i, j, 2) - b) * factor;
+            img(i, j, 0) = min(max(int(r), 0), 255);
+            img(i, j, 1) = min(max(int(g), 0), 255);
+            img(i, j, 2) = min(max(int(b), 0), 255);
+        }
+    }
+}
 
 //=============================================
 //=============================================
@@ -1155,6 +1267,10 @@ int main()
             cout << "16- Wano Night (Purple look)\n";
             cout << "17- Infrared Image\n";
             cout << "18- \n";
+            cout << "19- Image Saturation\n";
+            cout << "20- \n";
+            cout << "21- Undo\n";
+            cout << "22- Redo\n";
             cout << "Your choice: ";
             getline(cin, choice);
             if (choice == "1" || choice == "Grayscale Conversion")
@@ -1222,9 +1338,21 @@ int main()
             {
                 WanoNight(img);
             }
-             else if (choice == "17" || choice == "Infrared Image" )
+            else if (choice == "17" || choice == "Infrared Image")
             {
                 Infrared_Image(img);
+            }
+            else if (choice == "19" || choice == "Image Saturation")
+            {
+                image_Saturation(img);
+            }
+            else if (choice == "21" || choice == "Undo")
+            {
+                undo_function(img);
+            }
+            else if (choice == "22" || choice == "Redo")
+            {
+                redo_function(img);
             }
             else if (choice == "0")
             {
