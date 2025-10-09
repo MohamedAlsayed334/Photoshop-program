@@ -1363,7 +1363,6 @@ int main()
             else if (choice == "00" || choice == "Save Image")
             {
                 Save_image(img, imagename);
-                running = 0;
             }
             else if (choice == "000" || choice == "Laod New Image")
             {
