@@ -15,12 +15,12 @@ vector<Image> redo;
 -------------------------------------------
  Team Members:
  > Mazen Sherif Al-Shahat        20240446
- Work Done : Filters 1,4,7,10
+ Work Done : Filters 1,4,7,10,14
  > Mohammed ElSayed AbdEl-Hamid  20242268
- Work Done : Filters 2,5,8,11
+ Work Done : Filters 2,5,8,11,13,16,19
  > Mohammed Tamer Salah          20242272
- Work Done : Filters 3,6,9,12
-
+ Work Done : Filters 3,6,9,12,17
+ Section: S21
  Menu was Done By All Team Members.
 -------------------------------------------
  Program Details :
