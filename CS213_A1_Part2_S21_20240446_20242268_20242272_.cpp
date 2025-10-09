@@ -46,6 +46,7 @@ void Save_image(Image &img, const string &org_name) // it automatically checks i
         cout << "Pls enter image name to store new image\n";
         cout << "and specify extension .jpg, .bmp, .png, .tga: ";
         cin >> filename;
+        cin.ignore();
         img.saveImage(filename);
         cout << "Image saved successfully as " << filename << endl;
     }
