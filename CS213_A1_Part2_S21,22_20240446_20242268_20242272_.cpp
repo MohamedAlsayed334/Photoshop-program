@@ -16,22 +16,17 @@ vector<Image> redo;
  Team Members:
  > Mazen Sherif Al-Shahat        20240446
  Work Done : Filters 1,4,7,10,14
+  Section: S25
  > Mohammed ElSayed AbdEl-Hamid  20242268
  Work Done : Filters 2,5,8,11,13,16,19
+  Section: S22
  > Mohammed Tamer Salah          20242272
  Work Done : Filters 3,6,9,12,17
  Section: S21
  Menu was Done By All Team Members.
 -------------------------------------------
  Program Details :
- it is a baby photoshop program that takes an image and apply a bunch of filters such as:
- 1 - GrayScale Filter makes the image in Grey ratios like the old images.
- 2 - Black & White makes the image in Black & white.
- 3 - Invert Image Color inverts the color into the opposite one (e.g. black --> white)
- 4 - Flip Image flips the image horizontally & vertically.
- 5 - Crop Image crops the image to specified size & part of image.
- 6 - Rotation Image rotates the image by 90 , 180 , 270 Degrees.
-( Will be replaced by Diagram Doc isa)
+ https://drive.google.com/drive/folders/1g8uQZ5bhZ5c1JTw9L1fpyOH-NBI5Oqbe?usp=sharing
  -------------------------------------------
  */
 //<<-----------------------00------------------------>>
