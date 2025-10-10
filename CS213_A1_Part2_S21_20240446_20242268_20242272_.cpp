@@ -1091,6 +1091,71 @@ void oil_painting(Image &img)
 }
 //<<-----------------------15------------------------>>
 // filter no.15 Wano Old TV
+
+void color_distortion(Image &img) {
+
+    Image distorted_img = img;
+    int distortion = 3;
+
+    for (int i = 0; i < img.width; i++) {
+        for (int j = 0; j < img.height; j++) {
+            int red_distortion = i+3;
+            int blue_distortion = i-3;
+
+            if ( red_distortion < img.width)
+            {
+                distorted_img(i, j, 0) = img(i+3, j, 0);
+            }
+
+            if (blue_distortion >=3)
+            {
+                distorted_img(i, j, 2) = img(i-3, j, 2);
+            }
+        }
+    }
+
+    distorted_img.saveImage("tv building.jpg");
+}
+
+void noise(Image &img) {
+    float noise_prob = 0.1;
+
+    for (int i = 0; i < img.width; i++)
+        for (int j = 0; j < img.height; j++) {
+            float random_noise = (float)rand() / RAND_MAX;
+
+            if (random_noise < float(noise_prob/2)) {
+                img(i, j, 0) =  img(i, j, 1) = img(i, j, 2) = 0;
+            }
+
+            else if (random_noise > 1-float(noise_prob/2)) {
+                img(i, j, 0) =  img(i, j, 1) = img(i, j, 2) = 255;
+            }
+        }
+    color_distortion(img);
+}
+
+void scanlines(Image &img) {
+
+    for (int i = 0; i < img.width; i++) {
+        for (int j = 0; j < img.height; j++) {
+            if (j%2==0) {
+                float factor = 0.5;
+
+                for (int k = 0; k < 3; k++)
+                {
+                    img(i, j, k) = img(i, j, k) * factor;
+                }
+            }
+        }
+    }
+
+    noise(img);
+}
+
+void Old_TV(Image &img) {
+    noise(img);
+}
 //<<-----------------------16------------------------>>
 // filter no. 16 Wano Night (Purple look)
 void WanoNight(Image &img)
@@ -1329,6 +1394,10 @@ int main()
             else if (choice == "14" || choice == "Oil Image")
             {
                 oil_painting(img);
+            }
+            else if (choice == "15" || choice == "TV Filter")
+            {
+                Old_TV(img);
             }
             else if (choice == "16" || choice == "Wano Night" || choice == "Purple look")
             {
