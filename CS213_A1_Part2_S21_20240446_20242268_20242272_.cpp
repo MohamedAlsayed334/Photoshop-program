@@ -1154,6 +1154,7 @@ void scanlines(Image &img) {
 }
 
 void Old_TV(Image &img) {
+ save_current(img);
     noise(img);
 }
 //<<-----------------------16------------------------>>
