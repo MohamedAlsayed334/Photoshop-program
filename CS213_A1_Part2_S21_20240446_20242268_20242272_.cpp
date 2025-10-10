@@ -1113,8 +1113,6 @@ void color_distortion(Image &img) {
             }
         }
     }
-
-    distorted_img.saveImage("tv building.jpg");
 }
 
 void noise(Image &img) {
