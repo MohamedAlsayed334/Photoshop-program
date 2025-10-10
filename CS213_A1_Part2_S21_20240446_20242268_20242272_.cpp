@@ -1213,7 +1213,8 @@ void Infrared_Image(Image &img)
     }
 }
 //<<-----------------------18------------------------>>
-// filter Skewing Images
+// filter Skewing Images 
+// will be done in 3rd phase isa due to lack of time.
 //<<-----------------------19------------------------>>
 // filter increase Saturation
 /*------------------- Description --------------------
@@ -1278,6 +1279,29 @@ void image_Saturation(Image &img)
         }
     }
 }
+//<<-----------------------20------------------------>>
+// Ultra Violet filter 
+
+void ultra_violet (Image& image)
+{
+    save_current(image);
+    int r , g , b;
+    GrayscaleConversion(image);
+
+    for (int i = 0; i < image.width; ++i)
+    {
+        for (int j = 0; j < image.height; ++j)
+        {
+            r =  image(i, j, 0) * 0.4 + 30;
+            g =  image(i,j,1) * 0.3;
+            b =  image(i,j,2) * 0.9 + 80;
+
+            image(i,j,0) = r;
+            image(i,j,1) = g;
+            image(i,j,2) = b;
+        }
+    }
+}
 
 //=============================================
 //=============================================
@@ -1323,12 +1347,12 @@ int main()
             cout << "12- Blur Image\n";
             cout << "13- Wano Sunlight\n";
             cout << "14- Oil Painting\n";
-            cout << "15- \n";
+            cout << "15- Old TV effect\n";
             cout << "16- Wano Night (Purple look)\n";
             cout << "17- Infrared Image\n";
             cout << "18- \n";
             cout << "19- Image Saturation\n";
-            cout << "20- \n";
+            cout << "20- Ultraviolet Image\n";
             cout << "21- Undo\n";
             cout << "22- Redo\n";
             cout << "Your choice: ";
@@ -1409,6 +1433,10 @@ int main()
             else if (choice == "19" || choice == "Image Saturation")
             {
                 image_Saturation(img);
+            }
+            else if (choice == "20" || choice == "Ultraviolet")
+            {
+                 ultra_violet(img);
             }
             else if (choice == "21" || choice == "Undo")
             {
