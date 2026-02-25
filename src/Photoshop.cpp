@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
-#include "Image_Class.h"
+#include "../lib/Image_Class.h"
 using namespace std;
 vector<Image> undo;
 vector<Image> redo;
@@ -1229,7 +1229,7 @@ void ShearX(Image &img)
     save_current(img);
     double k = tan(40.0 * M_PI / 180.0);
 
-    int oldWidth  = img.width;
+    int oldWidth = img.width;
     int oldHeight = img.height;
 
     int newWidth = oldWidth + static_cast<int>(ceil(abs(k) * oldHeight));
