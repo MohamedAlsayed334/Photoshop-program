@@ -125,7 +125,8 @@
 ---
 ---
 <div align="center">
-  Made with ❤️ 
+  Made with ❤️
+  <br>
   Stay Tuned for further Updates 🤩
   <br>
   <sub>Last updated: Feb 2026</sub>
