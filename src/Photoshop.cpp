@@ -21,7 +21,7 @@ vector<Image> redo;
  Work Done : Filters 2,5,8,11,13,16,19
   Section: S22
  > Mohammed Tamer Salah          20242272
- Work Done : Filters 3,6,9,12,17,20
+ Work Done : Filters 3,6,9,12,17,18,20
  Section: S21
  Menu was Done By All Team Members.
 -------------------------------------------
@@ -356,7 +356,7 @@ Image rotate270(Image &org)
     }
     return output;
 }
-int rotate_image(Image &filename)
+void rotate_image(Image &filename)
 {
     save_current(filename);
     int Degree;
@@ -372,9 +372,8 @@ int rotate_image(Image &filename)
     else
     {
         cout << "Invalid degree!\n";
-        return 1;
+        rotate_image(filename);
     }
-    return 0;
 }
 //<<------------------------7------------------------->>
 // filter 7 in our project
@@ -1225,8 +1224,41 @@ void Infrared_Image(Image &img)
     }
 }
 //<<-----------------------18------------------------>>
-// filter Skewing Images
-// will be done in 3rd phase isa due to lack of time.
+void ShearX(Image &img)
+{
+    save_current(img);
+    double k = tan(40.0 * M_PI / 180.0);
+
+    int oldWidth  = img.width;
+    int oldHeight = img.height;
+
+    int newWidth = oldWidth + static_cast<int>(ceil(abs(k) * oldHeight));
+    int newHeight = oldHeight;
+    Image output(newWidth, newHeight);
+
+    for (int x = 0; x < newWidth; x++)
+        for (int y = 0; y < newHeight; y++)
+            for (int c = 0; c < 3; c++)
+                output(x, y, c) = 0;
+
+    for (int y = 0; y < oldHeight; y++)
+    {
+        for (int xNew = 0; xNew < newWidth; xNew++)
+        {
+            double xOld = xNew - k * y;
+            int xSrc = static_cast<int>(round(xOld));
+            if (xSrc >= 0 && xSrc < oldWidth)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    output(xNew, y, c) = img(xSrc, y, c);
+                }
+            }
+        }
+    }
+    Horizontalflip(output);
+    img = output;
+}
 //<<-----------------------19------------------------>>
 // filter increase Saturation
 /*------------------- Description --------------------
@@ -1314,7 +1346,6 @@ void ultra_violet(Image &image)
         }
     }
 }
-
 //=============================================
 //=============================================
 //=============================================
@@ -1362,7 +1393,7 @@ int main()
             cout << "15- Old TV effect\n";
             cout << "16- Wano Night (Purple look)\n";
             cout << "17- Infrared Image\n";
-            cout << "18- \n";
+            cout << "18- Skew Image\n";
             cout << "19- Image Saturation\n";
             cout << "20- Ultraviolet Image\n";
             cout << "21- Undo\n";
@@ -1441,6 +1472,10 @@ int main()
             else if (choice == "17" || choice == "Infrared Image")
             {
                 Infrared_Image(img);
+            }
+            else if (choice == "18" || choice == "Skew Image")
+            {
+                ShearX(img);
             }
             else if (choice == "19" || choice == "Image Saturation")
             {
