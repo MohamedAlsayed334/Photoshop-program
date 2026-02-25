@@ -58,6 +58,7 @@
 - ✅ Resize Image (Shrink/Stretch)
 - ✅ Crop Image
 - ✅ Add Frames (Simple & Fancy)
+- ✅ Horizontal Sheer by 40 (A.K.A. Skew Filter)
 
 ### 🎭 **Creative Effects**
 - ✅ Oil Painting Effect
@@ -115,7 +116,7 @@
     </tr>
     <tr>
       <td><b>Mohammed Tamer Salah</b></td>
-      <td>3, 6, 9, 12, 17, 20</td>
+      <td>3, 6, 9, 12, 17, 18, 20</td>
     </tr>
   </table>
   <p><i>🤝 Menu system was collaboratively designed by all team members</i></p>
@@ -125,6 +126,7 @@
 ---
 <div align="center">
   Made with ❤️ 
+  Stay Tuned for further Updates 🤩
   <br>
   <sub>Last updated: Feb 2026</sub>
 </div>
